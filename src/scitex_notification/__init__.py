@@ -45,7 +45,7 @@ from ._backends import NotifyLevel as _AlertLevel
 from ._backends import available_backends as _available_backends
 from ._backends import get_backend as _get_backend
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "alert",
