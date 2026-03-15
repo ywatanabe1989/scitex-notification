@@ -1,0 +1,101 @@
+#!/bin/bash
+# File: audio-relay-setup.src
+# Description: SSH Audio Relay configuration for scitex-notification
+#
+# Source this file in your shell profile, or set:
+#   export SCITEX_AUDIO_ENV_SRC=/path/to/audio-relay-setup.src
+
+# shellcheck disable=SC2034
+
+# ----------------------------------------
+# Audio Relay Configuration
+# ----------------------------------------
+# Direction: Local machine (speakers) <-- SSH tunnel <-- Remote server
+#
+# | Variable                | Default | Description                            |
+# |-------------------------|---------|----------------------------------------|
+# | SCITEX_AUDIO_RELAY_PORT | 31293   | Relay server port                      |
+# | SCITEX_AUDIO_MODE       | auto    | local, remote, or auto                 |
+# | SCITEX_AUDIO_RELAY_URL  | (auto)  | Full relay URL (auto from SSH_CLIENT)  |
+
+export SCITEX_AUDIO_RELAY_PORT=31293
+
+# ----------------------------------------
+# Helpers
+# ----------------------------------------
+_get_local_ip() {
+    ip route get 1 2>/dev/null | awk '{print $7; exit}' ||
+        hostname -I 2>/dev/null | awk '{print $1}' ||
+        echo "127.0.0.1"
+}
+
+_audio_port_alive() {
+    local port="${SCITEX_AUDIO_RELAY_PORT:-31293}"
+    timeout 1 bash -c "echo >/dev/tcp/127.0.0.1/$port" 2>/dev/null
+}
+
+_audio_health_ok() {
+    local port="${SCITEX_AUDIO_RELAY_PORT:-31293}"
+    curl -sf --connect-timeout 2 "http://localhost:$port/health" >/dev/null 2>&1
+}
+
+# ----------------------------------------
+# Local Machine (has speakers)
+# ----------------------------------------
+_configure_local() {
+    export SCITEX_AUDIO_MODE=local
+    export SCITEX_LOCAL_MACHINE_IP
+    SCITEX_LOCAL_MACHINE_IP="$(_get_local_ip)"
+}
+
+_start_relay() {
+    local port="${SCITEX_AUDIO_RELAY_PORT:-31293}"
+
+    _audio_health_ok && return
+
+    if _audio_port_alive; then
+        pkill -f "scitex-audio relay" 2>/dev/null || true
+        sleep 1
+    fi
+
+    if ! pgrep -f "scitex-audio relay" >/dev/null; then
+        scitex-audio relay start --port "$port" &>/dev/null &
+        disown
+    fi
+}
+
+# ----------------------------------------
+# Remote Server (no speakers, uses SSH tunnel)
+# ----------------------------------------
+_configure_remote() {
+    export SCITEX_AUDIO_MODE=remote
+    # SCITEX_AUDIO_RELAY_URL is auto-detected from SSH_CLIENT
+}
+
+_validate_tunnel() {
+    _audio_port_alive && return 0
+    return 1
+}
+
+# ----------------------------------------
+# Main — adapt hostnames to your setup
+# ----------------------------------------
+LOCAL_HOST="my-laptop"  # Machine with speakers
+REMOTE_HOST="my-server" # Server running jobs
+
+_main() {
+    case "$(hostname)" in
+    "$LOCAL_HOST")
+        _configure_local
+        _start_relay
+        ;;
+    "$REMOTE_HOST")
+        _configure_remote
+        _validate_tunnel
+        ;;
+    esac
+}
+
+_main
+
+# EOF

@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 07:57:21
+!-- Timestamp: 2026-03-16 09:00:13
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -12,7 +12,7 @@
   </a>
 </p>
 
-<p align="center"><b>Multi-backend notification system for scientific workflows</b></p>
+<p align="center"><b>Multi-backend notification system — give your AI agents a voice</b></p>
 
 <p align="center">
   <a href="https://badge.fury.io/py/scitex-notification"><img src="https://badge.fury.io/py/scitex-notification.svg" alt="PyPI version"></a>
@@ -29,13 +29,14 @@
 
 ## Problem
 
-You delegate a task to an AI coding agent — or kick off a build, training run, deploy — and then you wait. You stare at the terminal, or you context-switch to something else and forget to check back. Either way, you lose: polling kills focus, and forgetting wastes hours.
-
-The same problem scales across every long-running process: CI/CD pipelines, HPC jobs, data migrations, batch processing. There is no standard way to route "I'm done" across the channels developers actually use — TTS, phone calls, SMS, Slack, email.
+Developers delegate tasks to AI coding agents — and then wait. Staring at terminals wastes time and drains cognitive resources. Sitting for hours waiting for results takes a physical toll, too.
 
 ## Solution
 
-SciTeX Notification provides a **unified alert interface** across 8 backends with a single function call. It speaks, calls, texts, and pings — so you never miss a completion or failure.
+SciTeX Notification lets you leave your desk — or even sleep — while your agents keep working. One MCP server gives them a voice in the following channels: TTS, phone calls, SMS, email, and webhooks.
+
+<details>
+<summary>Supported Backends</summary>
 
 | Backend | API | Transport | Cost | Internet | Notes |
 |---------|-----|-----------|------|----------|-------|
@@ -46,9 +47,11 @@ SciTeX Notification provides a **unified alert interface** across 8 backends wit
 | Playwright | `alert()` | Browser popup | Free | No | |
 | Email | `alert()` | SMTP | Free | Required | Gmail, SMTP relay |
 | Webhook | `alert()` | HTTP POST | Free | Required | Slack, Discord, custom endpoints |
-| Twilio | `call()` `sms()` | Phone call / SMS | Paid | Required | No SDK — stdlib `urllib` only |
+| Twilio | `call()` `sms()` | Phone call / SMS | Paid | Required | [Twilio](https://www.twilio.com/) setup needed |
 
 `alert()` tries backends in fallback order until one succeeds. `call()` and `sms()` target Twilio directly.
+
+</details>
 
 ## Auditory Feedback -> Phone Call Escalation
 
@@ -59,13 +62,14 @@ When an AI agent needs your attention — even while you sleep — it can escala
   &nbsp;&nbsp;&nbsp;
   <img src="docs/scitex-alert.png" alt="SciTeX Alert — phone call history" height="280">
 </p>
-<p align="center"><em>Fig. 1: Left — Claude Code terminal showing audio → phone call escalation after 7 consecutive auditory feedback but without no response from user. Right — iPhone receiving repeated "SciTeX Alert" calls from the AI agent.</em></p>
+<p align="center"><em>Fig. 1: Left — Claude Code terminal showing audio → phone call escalation after 7 consecutive auditory feedback but with no response from the user. Right — iPhone receiving repeated "SciTeX Alert" calls from the AI agent.</em></p>
 
 > **Penetrating iPhone Silent Mode**:
 > 1. **Emergency Bypass (most reliable)**: Save your Twilio number as a contact → Ringtone → enable **Emergency Bypass**. All calls ring regardless of Focus/Silent mode.
 > 2. **Repeated Calls (fallback)**: iOS allows the second call from the same number within 3 minutes to ring through. `repeat=2` triggers this automatically with a 30-second gap.
 
-### Example: `/speak-and-continue` Command in Claude Code
+<details>
+<summary><strong>Example Command for Claude Code (`/speak-and-continue`)</strong></summary>
 
 The [`/speak-and-continue` command](./docs/speak-and-continue.md) is a real-world example of scitex-notification in action. It configures an AI coding agent (Claude Code) to:
 
@@ -75,6 +79,8 @@ The [`/speak-and-continue` command](./docs/speak-and-continue.md) is a real-worl
 4. **Escalate to phone call** after 7 unanswered speaks — waking the user if asleep
 
 This enables a 24/7 development workflow: the agent works autonomously, speaks progress aloud, and calls your phone when it needs your attention or when all tasks are complete.
+
+</details>
 
 ## Installation
 
@@ -93,39 +99,7 @@ pip install "scitex-notification[mcp]"      # MCP server for AI agents
 pip install "scitex-notification[all]"      # everything
 ```
 
-> **SciTeX users**: `pip install scitex` already includes Notification. Alerts are automatic via `@scitex.session`.
-
 ## Quickstart
-
-```python
-import scitex_notification as notification
-
-# Alert via default backend (audio → emacs → email fallback)
-notification.alert("Training complete. Val loss: 0.042")
-
-# Alert via a specific backend
-notification.alert("Job finished", backend="email")
-
-# Alert via multiple backends
-notification.alert("Critical failure", backend=["sms", "email"])
-
-# Make a phone call via Twilio
-notification.call("Critical alert!", repeat=2,  # Calls twice to bypass silent mode)
-
-# Send an SMS via Twilio
-notification.sms("Build done!")
-```
-
-Configure backends via environment variables (see `.env.example`):
-
-```bash
-export SCITEX_NOTIFY_DEFAULT_BACKEND=audio
-export SCITEX_NOTIFY_TWILIO_SID=ACxxxxxxx
-export SCITEX_NOTIFY_TWILIO_TOKEN=...
-export SCITEX_NOTIFY_TWILIO_TO=+XX-XXX-XXX-XXXX
-```
-
-## Three Interfaces
 
 <details>
 <summary><strong>Python API</strong></summary>
@@ -192,7 +166,11 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
       "command": "scitex-notification",
       "args": ["mcp", "start"],
       "env": {
-        "SCITEX_NOTIFICATION_ENV_SRC": "${SCITEX_NOTIFICATION_ENV_SRC}"
+        "SCITEX_NOTIFICATION_DEFAULT_BACKEND": "audio",
+        "SCITEX_NOTIFICATION_TWILIO_SID": "ACxxxxxxx",
+        "SCITEX_NOTIFICATION_TWILIO_TOKEN": "...",
+        "SCITEX_NOTIFICATION_TWILIO_TO": "+XX-XXX-XXX-XXXX",
+        "SCITEX_AUDIO_RELAY_PORT": "${SCITEX_AUDIO_RELAY_PORT}"
       }
     }
   }
@@ -203,27 +181,72 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 
 </details>
 
-## Centralize Speakers by SSH Audio Relay
+## Setup: Speakers Centralization
 
-Running jobs on a remote server or NAS? TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
+TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
+
+Setup example can be seen at [`./docs/audio-relay-setup.src`](./docs/audio-relay-setup.src)
+
+<details>
+<summary><strong>Setup example</strong></summary>
+
+<br>
+
+**1. Local machine** (has speakers) — start the relay server:
 
 ```bash
-# On your local machine (has speakers)
-scitex-audio relay start
+scitex-audio relay start --port 31293
+```
 
-# In your SSH config (~/.ssh/config)
-Host myserver
+**2. SSH config** (`~/.ssh/config`) — forward the relay port:
+
+```
+Host my-server
+    HostName 192.168.x.x
     RemoteForward 31293 127.0.0.1:31293
+```
 
-# On the remote server — audio plays on your local speakers
+**3. Remote server** — audio plays on your local speakers:
+
+```python
+import scitex_notification as notify
 notify.alert("Training complete. Val loss: 0.042")
 ```
 
-No extra configuration on the notification side. The [scitex-audio](https://github.com/ywatanabe1989/scitex-audio) relay handles the routing automatically.
+**4. Shell profile** (optional) — auto-configure per host:
 
 ```bash
-pip install "scitex-notification[audio]"
+# ~/.bashrc.d/audio.src (sourced via SCITEX_AUDIO_ENV_SRC)
+export SCITEX_AUDIO_RELAY_PORT=31293
+
+# Local machine: run relay server
+if [[ "$(hostname)" == "my-laptop" ]]; then
+    export SCITEX_AUDIO_MODE=local
+    scitex-audio relay start --port $SCITEX_AUDIO_RELAY_PORT &>/dev/null &
+fi
+
+# Remote server: use relay via SSH tunnel
+if [[ "$(hostname)" == "my-server" ]]; then
+    export SCITEX_AUDIO_MODE=remote
+fi
 ```
+
+</details>
+
+## Setup: Twilio for Phone Call and SMS
+
+Configure backends via environment variables (see [`.env.example`](.env.example)):
+
+<details>
+
+```bash
+export SCITEX_NOTIFICATION_DEFAULT_BACKEND=audio
+export SCITEX_NOTIFICATION_TWILIO_SID=ACxxxxxxx
+export SCITEX_NOTIFICATION_TWILIO_TOKEN=...
+export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
+```
+
+</details>
 
 ## Part of SciTeX
 
