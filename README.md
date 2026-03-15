@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 09:05:20
+!-- Timestamp: 2026-03-16 09:07:37
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -165,8 +165,10 @@ scitex-notification mcp start
 
 ### MCP Server
 
+For AI Agents such as Claude Code.
+
 <details>
-<summary><strong>Setup example</strong></summary>
+<summary><strong>Example</strong></summary>
 
 Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load all configuration from a `.src` file — this keeps `.mcp.json` static across environments:
 
@@ -197,7 +199,7 @@ TTS alerts are relayed back through your SSH tunnel to the speakers on your desk
 Setup example can be seen at [`./docs/audio-relay-setup.src`](./docs/audio-relay-setup.src)
 
 <details>
-<summary><strong>Setup example</strong></summary>
+<summary><strong>Example</strong></summary>
 
 <br>
 
@@ -247,6 +249,7 @@ fi
 Configure backends via environment variables (see [`.env.example`](.env.example)):
 
 <details>
+<summary><strong>Example</strong></summary>
 
 ```bash
 export SCITEX_NOTIFICATION_DEFAULT_BACKEND=audio
