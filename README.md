@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:45:43
+!-- Timestamp: 2026-03-16 08:47:15
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -68,7 +68,8 @@ When an AI agent needs your attention — even while you sleep — it can escala
 > 1. **Emergency Bypass (most reliable)**: Save your Twilio number as a contact → Ringtone → enable **Emergency Bypass**. All calls ring regardless of Focus/Silent mode.
 > 2. **Repeated Calls (fallback)**: iOS allows the second call from the same number within 3 minutes to ring through. `repeat=2` triggers this automatically with a 30-second gap.
 
-### Example: `/speak-and-continue` Command in Claude Code
+<details>
+<summary><strong>Example Command for Claude Code (`/speak-and-continue`)</strong></summary>
 
 The [`/speak-and-continue` command](./docs/speak-and-continue.md) is a real-world example of scitex-notification in action. It configures an AI coding agent (Claude Code) to:
 
@@ -78,6 +79,8 @@ The [`/speak-and-continue` command](./docs/speak-and-continue.md) is a real-worl
 4. **Escalate to phone call** after 7 unanswered speaks — waking the user if asleep
 
 This enables a 24/7 development workflow: the agent works autonomously, speaks progress aloud, and calls your phone when it needs your attention or when all tasks are complete.
+
+</details>
 
 ## Installation
 
