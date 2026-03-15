@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:43:54
+!-- Timestamp: 2026-03-16 08:44:45
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -35,7 +35,8 @@ Developers delegate tasks to AI coding agents — and then wait. Staring at term
 
 SciTeX Notification lets you leave your desk — or even sleep — while your agents keep working. One MCP server gives them a voice in the following channels: TTS, phone calls, SMS, email, and webhooks.
 
-<details>Supported Backends
+<details>
+<summary>Supported Backends</summary>
 
 | Backend | API | Transport | Cost | Internet | Notes |
 |---------|-----|-----------|------|----------|-------|
@@ -94,8 +95,6 @@ pip install "scitex-notification[twilio]"   # SMS via Twilio
 pip install "scitex-notification[mcp]"      # MCP server for AI agents
 pip install "scitex-notification[all]"      # everything
 ```
-
-> **SciTeX users**: `pip install scitex` already includes Notification. Alerts are automatic via `@scitex.session`.
 
 ## Quickstart
 
