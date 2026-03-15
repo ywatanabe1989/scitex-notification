@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:36:24
+!-- Timestamp: 2026-03-16 08:39:51
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -203,19 +203,53 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 
 ## Centralize Speakers by SSH Audio Relay
 
-Running jobs on a remote server or NAS? TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
+Running jobs on remote servers? TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
+
+<details>
+<summary><strong>Setup example</strong></summary>
+
+<br>
+
+**1. Local machine** (has speakers) — start the relay server:
 
 ```bash
-# On your local machine (has speakers)
-scitex-audio relay start
+scitex-audio relay start --port 31293
+```
 
-# In your SSH config (~/.ssh/config)
-Host myserver
+**2. SSH config** (`~/.ssh/config`) — forward the relay port:
+
+```
+Host my-server
+    HostName 192.168.x.x
     RemoteForward 31293 127.0.0.1:31293
+```
 
-# On the remote server — audio plays on your local speakers
+**3. Remote server** — audio plays on your local speakers:
+
+```python
+import scitex_notification as notify
 notify.alert("Training complete. Val loss: 0.042")
 ```
+
+**4. Shell profile** (optional) — auto-configure per host:
+
+```bash
+# ~/.bashrc.d/audio.src (sourced via SCITEX_AUDIO_ENV_SRC)
+export SCITEX_AUDIO_RELAY_PORT=31293
+
+# Local machine: run relay server
+if [[ "$(hostname)" == "my-laptop" ]]; then
+    export SCITEX_AUDIO_MODE=local
+    scitex-audio relay start --port $SCITEX_AUDIO_RELAY_PORT &>/dev/null &
+fi
+
+# Remote server: use relay via SSH tunnel
+if [[ "$(hostname)" == "my-server" ]]; then
+    export SCITEX_AUDIO_MODE=remote
+fi
+```
+
+</details>
 
 No extra configuration on the notification side. The [scitex-audio](https://github.com/ywatanabe1989/scitex-audio) relay handles the routing automatically.
 
