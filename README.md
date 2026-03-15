@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:49:06
+!-- Timestamp: 2026-03-16 08:52:14
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -177,8 +177,7 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 
 </details>
 
-<details>
-<summary><strong>Configuration</strong></summary>
+## Configuration
 
 Configure backends via environment variables (see `.env.example`):
 
@@ -188,14 +187,15 @@ export SCITEX_NOTIFICATION_TWILIO_SID=ACxxxxxxx
 export SCITEX_NOTIFICATION_TWILIO_TOKEN=...
 export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
 ```
-</details>
 
-## Centralize Speakers by SSH Audio Relay
+## Centralize Speakers to Your Laptop
 
 Running jobs on remote servers? TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
 
 <details>
 <summary><strong>Setup example</strong></summary>
+
+Example can be seen at [./docs/audio-relay-setup.src](./docs/audio-relay-setup.src)
 
 <br>
 
