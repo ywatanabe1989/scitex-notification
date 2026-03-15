@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 09:09:30
+!-- Timestamp: 2026-03-16 09:11:05
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -196,7 +196,7 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 
 ### Speakers Centralization
 
-TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
+Remote machines can speak from your local speakers.
 
 Setup example can be seen at [`./docs/audio-relay-setup.src`](./docs/audio-relay-setup.src)
 
