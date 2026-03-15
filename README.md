@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:56:49
+!-- Timestamp: 2026-03-16 08:58:49
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -181,22 +181,7 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 
 </details>
 
-## Configuration
-
-Configure backends via environment variables (see [`.env.example`](.env.example)):
-
-<details>
-
-```bash
-export SCITEX_NOTIFICATION_DEFAULT_BACKEND=audio
-export SCITEX_NOTIFICATION_TWILIO_SID=ACxxxxxxx
-export SCITEX_NOTIFICATION_TWILIO_TOKEN=...
-export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
-```
-
-</details>
-
-## Centralize Speakers to Your Laptop
+## Speakers Centralization Setup
 
 Running jobs on remote servers? TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
 
@@ -244,6 +229,21 @@ fi
 if [[ "$(hostname)" == "my-server" ]]; then
     export SCITEX_AUDIO_MODE=remote
 fi
+```
+
+</details>
+
+## Twilio Setup (for Phone Call and SMS)
+
+Configure backends via environment variables (see [`.env.example`](.env.example)):
+
+<details>
+
+```bash
+export SCITEX_NOTIFICATION_DEFAULT_BACKEND=audio
+export SCITEX_NOTIFICATION_TWILIO_SID=ACxxxxxxx
+export SCITEX_NOTIFICATION_TWILIO_TOKEN=...
+export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
 ```
 
 </details>
