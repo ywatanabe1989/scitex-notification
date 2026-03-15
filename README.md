@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 09:00:13
+!-- Timestamp: 2026-03-16 09:04:12
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -157,6 +157,15 @@ AI agents can send notifications and check system status autonomously.
 scitex-notification mcp start
 ```
 
+> **[Full MCP specification](https://scitex-notification.readthedocs.io/)**
+
+</details>
+
+## Setup: MCP Server
+
+<details>
+<summary><strong>Setup example</strong></summary>
+
 Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load all configuration from a `.src` file — this keeps `.mcp.json` static across environments:
 
 ```json
@@ -176,8 +185,6 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
   }
 }
 ```
-
-> **[Full MCP specification](https://scitex-notification.readthedocs.io/)**
 
 </details>
 
