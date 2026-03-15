@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:35:12
+!-- Timestamp: 2026-03-16 08:36:24
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -33,7 +33,7 @@ Developers delegate tasks to AI coding agents — and then wait. Staring at term
 
 ## Solution
 
-SciTeX Notification lets you leave your desk — or even sleep — while your agents keep working. One MCP server gives them a voice. Notification channels span TTS, phone calls, SMS, email, and webhooks.
+SciTeX Notification lets you leave your desk — or even sleep — while your agents keep working. One MCP server gives them a voice in the following channels: TTS, phone calls, SMS, email, and webhooks.
 
 | Backend | API | Transport | Cost | Internet | Notes |
 |---------|-----|-----------|------|----------|-------|
