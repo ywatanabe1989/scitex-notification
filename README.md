@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 09:04:12
+!-- Timestamp: 2026-03-16 09:05:20
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -161,7 +161,9 @@ scitex-notification mcp start
 
 </details>
 
-## Setup: MCP Server
+## Setup
+
+### MCP Server
 
 <details>
 <summary><strong>Setup example</strong></summary>
@@ -188,7 +190,7 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 
 </details>
 
-## Setup: Speakers Centralization
+### Speakers Centralization
 
 TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
 
@@ -240,7 +242,7 @@ fi
 
 </details>
 
-## Setup: Twilio for Phone Call and SMS
+### Twilio for Phone Call and SMS
 
 Configure backends via environment variables (see [`.env.example`](.env.example)):
 
