@@ -44,7 +44,7 @@ SciTeX Notification lets you leave your desk — or even sleep — while your ag
 | Playwright | `alert()` | Browser popup | Free | No | |
 | Email | `alert()` | SMTP | Free | Required | Gmail, SMTP relay |
 | Webhook | `alert()` | HTTP POST | Free | Required | Slack, Discord, custom endpoints |
-| Twilio | `call()` `sms()` | Phone call / SMS | Paid | Required | Twilio setup needed |
+| Twilio | `call()` `sms()` | Phone call / SMS | Paid | Required | [Twilio](https://www.twilio.com/) setup needed |
 
 `alert()` tries backends in fallback order until one succeeds. `call()` and `sms()` target Twilio directly.
 
