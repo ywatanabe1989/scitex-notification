@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 09:07:37
+!-- Timestamp: 2026-03-16 09:09:30
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -163,6 +163,8 @@ scitex-notification mcp start
 
 ## Setup
 
+Environmental Variables List [`.env.example`](.env.example).
+
 ### MCP Server
 
 For AI Agents such as Claude Code.
@@ -245,8 +247,6 @@ fi
 </details>
 
 ### Twilio for Phone Call and SMS
-
-Configure backends via environment variables (see [`.env.example`](.env.example)):
 
 <details>
 <summary><strong>Example</strong></summary>
