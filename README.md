@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:39:51
+!-- Timestamp: 2026-03-16 08:43:54
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -35,6 +35,8 @@ Developers delegate tasks to AI coding agents — and then wait. Staring at term
 
 SciTeX Notification lets you leave your desk — or even sleep — while your agents keep working. One MCP server gives them a voice in the following channels: TTS, phone calls, SMS, email, and webhooks.
 
+<details>Supported Backends
+
 | Backend | API | Transport | Cost | Internet | Notes |
 |---------|-----|-----------|------|----------|-------|
 | Audio | `alert()` | TTS to local speakers | Free | No | Via [scitex-audio](https://github.com/ywatanabe1989/scitex-audio); SSH relay supported |
@@ -47,6 +49,8 @@ SciTeX Notification lets you leave your desk — or even sleep — while your ag
 | Twilio | `call()` `sms()` | Phone call / SMS | Paid | Required | [Twilio](https://www.twilio.com/) setup needed |
 
 `alert()` tries backends in fallback order until one succeeds. `call()` and `sms()` target Twilio directly.
+
+</details>
 
 ## Auditory Feedback -> Phone Call Escalation
 
@@ -250,12 +254,6 @@ fi
 ```
 
 </details>
-
-No extra configuration on the notification side. The [scitex-audio](https://github.com/ywatanabe1989/scitex-audio) relay handles the routing automatically.
-
-```bash
-pip install "scitex-notification[audio]"
-```
 
 ## Part of SciTeX
 
