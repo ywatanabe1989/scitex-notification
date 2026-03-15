@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:52:14
+!-- Timestamp: 2026-03-16 08:54:26
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -12,7 +12,7 @@
   </a>
 </p>
 
-<p align="center"><b>Multi-backend notification system for scientific workflows</b></p>
+<p align="center"><b>Multi-backend notification system — give your AI agents a voice</b></p>
 
 <p align="center">
   <a href="https://badge.fury.io/py/scitex-notification"><img src="https://badge.fury.io/py/scitex-notification.svg" alt="PyPI version"></a>
@@ -62,7 +62,7 @@ When an AI agent needs your attention — even while you sleep — it can escala
   &nbsp;&nbsp;&nbsp;
   <img src="docs/scitex-alert.png" alt="SciTeX Alert — phone call history" height="280">
 </p>
-<p align="center"><em>Fig. 1: Left — Claude Code terminal showing audio → phone call escalation after 7 consecutive auditory feedback but without no response from user. Right — iPhone receiving repeated "SciTeX Alert" calls from the AI agent.</em></p>
+<p align="center"><em>Fig. 1: Left — Claude Code terminal showing audio → phone call escalation after 7 consecutive auditory feedback but with no response from the user. Right — iPhone receiving repeated "SciTeX Alert" calls from the AI agent.</em></p>
 
 > **Penetrating iPhone Silent Mode**:
 > 1. **Emergency Bypass (most reliable)**: Save your Twilio number as a contact → Ringtone → enable **Emergency Bypass**. All calls ring regardless of Focus/Silent mode.
@@ -166,7 +166,11 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
       "command": "scitex-notification",
       "args": ["mcp", "start"],
       "env": {
-        "SCITEX_NOTIFICATION_ENV_SRC": "${SCITEX_NOTIFICATION_ENV_SRC}"
+        "SCITEX_NOTIFICATION_DEFAULT_BACKEND": "audio",
+        "SCITEX_NOTIFICATION_TWILIO_SID": "ACxxxxxxx",
+        "SCITEX_NOTIFICATION_TWILIO_TOKEN": "...",
+        "SCITEX_NOTIFICATION_TWILIO_TO": "+XX-XXX-XXX-XXXX",
+        "SCITEX_AUDIO_RELAY_PORT": "${SCITEX_AUDIO_RELAY_PORT}"
       }
     }
   }
