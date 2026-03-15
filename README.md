@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 07:57:21
+!-- Timestamp: 2026-03-16 08:28:01
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -29,13 +29,11 @@
 
 ## Problem
 
-You delegate a task to an AI coding agent — or kick off a build, training run, deploy — and then you wait. You stare at the terminal, or you context-switch to something else and forget to check back. Either way, you lose: polling kills focus, and forgetting wastes hours.
-
-The same problem scales across every long-running process: CI/CD pipelines, HPC jobs, data migrations, batch processing. There is no standard way to route "I'm done" across the channels developers actually use — TTS, phone calls, SMS, Slack, email.
+Developers delegate tasks to AI coding agents — and then wait. Staring at the terminal kills focus; switching away means missing the result. The same applies to builds, training runs, and deploys. There is no standard way for an agent or process to say "I'm done" through the channel you'll actually notice.
 
 ## Solution
 
-SciTeX Notification provides a **unified alert interface** across 8 backends with a single function call. It speaks, calls, texts, and pings — so you never miss a completion or failure.
+SciTeX Notification gives your agents a voice. One function call routes alerts through TTS, phone calls, SMS, email, or webhooks — whichever reaches you first.
 
 | Backend | API | Transport | Cost | Internet | Notes |
 |---------|-----|-----------|------|----------|-------|
