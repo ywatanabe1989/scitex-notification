@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:28:01
+!-- Timestamp: 2026-03-16 08:31:11
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -29,7 +29,7 @@
 
 ## Problem
 
-Developers delegate tasks to AI coding agents — and then wait. Staring at the terminal kills focus; switching away means missing the result. The same applies to builds, training runs, and deploys. There is no standard way for an agent or process to say "I'm done" through the channel you'll actually notice.
+Developers delegate tasks to AI coding agents — and then wait. Staring at terminals wastes time and drains cognitive resources. Sitting for hours waiting for results takes a physical toll, too.
 
 ## Solution
 
