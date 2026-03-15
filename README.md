@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 08:47:15
+!-- Timestamp: 2026-03-16 08:49:06
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -176,17 +176,19 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 > **[Full MCP specification](https://scitex-notification.readthedocs.io/)**
 
 </details>
-```
-## Configuration
+
+<details>
+<summary><strong>Configuration</strong></summary>
 
 Configure backends via environment variables (see `.env.example`):
 
 ```bash
-export SCITEX_NOTIFY_DEFAULT_BACKEND=audio
-export SCITEX_NOTIFY_TWILIO_SID=ACxxxxxxx
-export SCITEX_NOTIFY_TWILIO_TOKEN=...
-export SCITEX_NOTIFY_TWILIO_TO=+XX-XXX-XXX-XXXX
+export SCITEX_NOTIFICATION_DEFAULT_BACKEND=audio
+export SCITEX_NOTIFICATION_TWILIO_SID=ACxxxxxxx
+export SCITEX_NOTIFICATION_TWILIO_TOKEN=...
+export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
 ```
+</details>
 
 ## Centralize Speakers by SSH Audio Relay
 
