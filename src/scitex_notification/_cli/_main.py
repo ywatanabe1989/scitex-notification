@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+# Timestamp: "2026-03-16 (ywatanabe)"
+# File: /home/ywatanabe/proj/scitex-notification/src/scitex_notification/_cli/_main.py
+
+"""
+SciTeX Notification CLI - main entry point.
+
+Composes sub-command modules into the top-level `cli` group.
+"""
+
+from __future__ import annotations
+
+import inspect
+
+import click
+
+from ._helpers import group_to_json, print_help_recursive
+from ._mcp_cmds import mcp
+from ._notify_cmds import call, config, list_backends, send, sms
+
+
+@click.group(
+    context_settings={"help_option_names": ["-h", "--help"]},
+    invoke_without_command=True,
+)
+@click.option("--help-recursive", is_flag=True, help="Show help for all subcommands")
+@click.option(
+    "--json",
+    "as_json",
+    is_flag=True,
+    help="Output as structured JSON (Result envelope).",
+)
+@click.pass_context
+def cli(ctx, help_recursive, as_json):
+    """
+    Notification and alerting tools
+
+    \b
+    Backends (fallback order):
+      audio      - Text-to-Speech (fast, non-blocking)
+      emacs      - Emacs minibuffer message
+      matplotlib - Visual popup
+      playwright - Browser popup
+      email      - SMTP email (slowest, most reliable)
+      twilio     - Phone call (explicit only)
+
+    \b
+    Examples:
+      scitex-notification send "Task complete!"
+      scitex-notification call "Wake up!"
+      scitex-notification call "Wake up!" --repeat 2
+      scitex-notification backends
+    """
+    if help_recursive:
+        print_help_recursive(ctx, cli)
+        ctx.exit(0)
+    elif ctx.invoked_subcommand is None:
+        if as_json:
+            group_to_json(ctx, cli)
+        else:
+            click.echo(ctx.get_help())
+
+
+# Register sub-commands from _notify_cmds
+cli.add_command(send)
+cli.add_command(call)
+cli.add_command(sms)
+cli.add_command(list_backends)
+cli.add_command(config)
+
+# Register mcp subgroup from _mcp_cmds
+cli.add_command(mcp)
+
+
+@cli.command("list-python-apis")
+@click.option("-v", "--verbose", count=True, help="Verbosity: -v +doc, -vv full doc")
+@click.option("-d", "--max-depth", type=int, default=3, help="Max recursion depth")
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
+def list_python_apis(verbose, max_depth, as_json):
+    """
+    List Python public APIs of scitex_notification
+
+    \b
+    Examples:
+      scitex-notification list-python-apis
+      scitex-notification list-python-apis -v
+      scitex-notification list-python-apis --json
+    """
+    import json as _json
+
+    import scitex_notification
+
+    def _collect(obj, prefix, depth, results):
+        if depth > max_depth:
+            return
+        for name in dir(obj):
+            if name.startswith("_"):
+                continue
+            try:
+                attr = getattr(obj, name)
+            except Exception:
+                continue
+            full_name = f"{prefix}.{name}"
+            if inspect.isfunction(attr) or inspect.isbuiltin(attr):
+                doc = ""
+                if verbose >= 1:
+                    raw = (inspect.getdoc(attr) or "").strip()
+                    doc = raw if verbose >= 2 else raw.split("\n")[0]
+                results.append({"name": full_name, "type": "function", "doc": doc})
+            elif inspect.ismodule(attr) and attr.__name__.startswith(
+                "scitex_notification"
+            ):
+                _collect(attr, full_name, depth + 1, results)
+
+    results: list[dict] = []
+    _collect(scitex_notification, "scitex_notification", 1, results)
+
+    if as_json:
+        click.echo(_json.dumps({"success": True, "apis": results}, indent=2))
+    else:
+        click.secho("Python APIs (scitex_notification):", fg="cyan", bold=True)
+        for item in results:
+            if item["doc"]:
+                click.echo(f"  {item['name']}  - {item['doc']}")
+            else:
+                click.echo(f"  {item['name']}")
+
+
+if __name__ == "__main__":
+    cli()
+
+
+# EOF

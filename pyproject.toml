@@ -1,0 +1,100 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scitex-notification"
+version = "0.1.0"
+description = "Multi-backend notification system for SciTeX"
+readme = "README.md"
+license = "AGPL-3.0-only"
+requires-python = ">=3.10"
+authors = [
+    { name = "Yusuke Watanabe", email = "ywatanabe@scitex.ai" },
+]
+keywords = [
+    "notification",
+    "alert",
+    "sms",
+    "email",
+    "webhook",
+    "scitex",
+    "science",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "click>=8.0",
+    "scitex_dev",
+]
+
+[project.optional-dependencies]
+audio = ["scitex-audio>=0.1.0"]
+mcp = ["mcp>=1.0"]
+playwright = ["playwright>=1.40"]
+twilio = ["twilio>=8.0"]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-asyncio",
+    "ruff",
+]
+docs = [
+    "sphinx>=7.0",
+    "sphinx-rtd-theme>=2.0",
+    "myst-parser>=2.0",
+    "sphinx-copybutton>=0.5",
+    "sphinx-autodoc-typehints>=1.25",
+]
+all = [
+    "scitex-notification[audio,mcp,playwright,twilio,dev,docs]",
+]
+
+[project.scripts]
+scitex-notification = "scitex_notification._cli:main"
+
+[project.entry-points."scitex_linter.plugins"]
+scitex_notification = "scitex_notification._linter_plugin:get_plugin"
+
+[project.entry-points."scitex_dev.docs"]
+scitex_notification = "scitex_notification"
+
+[project.urls]
+Homepage = "https://github.com/ywatanabe1989/scitex-notification"
+Repository = "https://github.com/ywatanabe1989/scitex-notification"
+Documentation = "https://scitex-notification.readthedocs.io"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scitex_notification"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+addopts = "--cov=scitex_notification --cov-report=term-missing --cov-report=html:htmlcov"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.coverage.run]
+source = ["scitex_notification"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+fail_under = 50
