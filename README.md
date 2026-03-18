@@ -1,5 +1,5 @@
 <!-- ---
-!-- Timestamp: 2026-03-16 09:00:13
+!-- Timestamp: 2026-03-16 09:11:05
 !-- Author: ywatanabe
 !-- File: /home/ywatanabe/proj/scitex-notification/README.md
 !-- --- -->
@@ -157,6 +157,21 @@ AI agents can send notifications and check system status autonomously.
 scitex-notification mcp start
 ```
 
+> **[Full MCP specification](https://scitex-notification.readthedocs.io/)**
+
+</details>
+
+## Setup
+
+Environmental Variables List [`.env.example`](.env.example).
+
+### MCP Server
+
+For AI Agents such as Claude Code.
+
+<details>
+<summary><strong>Example</strong></summary>
+
 Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load all configuration from a `.src` file — this keeps `.mcp.json` static across environments:
 
 ```json
@@ -177,18 +192,16 @@ Add `.mcp.json` to your project root. Use `SCITEX_NOTIFICATION_ENV_SRC` to load 
 }
 ```
 
-> **[Full MCP specification](https://scitex-notification.readthedocs.io/)**
-
 </details>
 
-## Setup: Speakers Centralization
+### Speakers Centralization
 
-TTS alerts are relayed back through your SSH tunnel to the speakers on your desk — your remote code speaks through your local machine.
+Remote machines can speak from your local speakers.
 
 Setup example can be seen at [`./docs/audio-relay-setup.src`](./docs/audio-relay-setup.src)
 
 <details>
-<summary><strong>Setup example</strong></summary>
+<summary><strong>Example</strong></summary>
 
 <br>
 
@@ -233,11 +246,10 @@ fi
 
 </details>
 
-## Setup: Twilio for Phone Call and SMS
-
-Configure backends via environment variables (see [`.env.example`](.env.example)):
+### Twilio for Phone Call and SMS
 
 <details>
+<summary><strong>Example</strong></summary>
 
 ```bash
 export SCITEX_NOTIFICATION_DEFAULT_BACKEND=audio

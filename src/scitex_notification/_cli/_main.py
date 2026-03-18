@@ -71,6 +71,13 @@ cli.add_command(config)
 # Register mcp subgroup from _mcp_cmds
 cli.add_command(mcp)
 
+try:
+    from scitex_dev.cli import docs_click_group
+
+    cli.add_command(docs_click_group(package="scitex-notification"))
+except ImportError:
+    pass
+
 
 @cli.command("list-python-apis")
 @click.option("-v", "--verbose", count=True, help="Verbosity: -v +doc, -vv full doc")
