@@ -1,5 +1,4 @@
 ---
-name: python-api
 description: scitex-notification Python API — alert(), call(), sms() function signatures, return types, and available_backends().
 ---
 

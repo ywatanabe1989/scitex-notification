@@ -1,5 +1,4 @@
 ---
-name: mcp-tools
 description: MCP tool schemas for scitex-notification — notify, notify_by_level, list_notification_backends, available_notification_backends, get_notification_config.
 ---
 
