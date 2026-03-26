@@ -73,7 +73,7 @@ def call(
 Convenience wrapper for `alert(backend="twilio", fallback=False)`. Makes a real phone call via Twilio REST API (no SDK required).
 
 - `to_number`: overrides `SCITEX_NOTIFICATION_TWILIO_TO`
-- `repeat` kwarg: repeat call N times, 30s apart (bypass iOS silent mode)
+- `repeat` kwarg: repeat call N times, 30s apart. Default from `$SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT` (default: `1`). Set to `1` if iOS Emergency Bypass is configured; set to `2` to trigger iOS "Repeated Calls" bypass.
 - `flow_sid` kwarg: use Twilio Studio Flow instead of direct TwiML
 
 ```python

@@ -54,6 +54,7 @@ Primary prefix `SCITEX_NOTIFICATION_*` is checked first. Fallback prefixes `SCIT
 | `SCITEX_NOTIFICATION_WARNING_BACKENDS` | Backends for `level="warning"` | `audio,emacs` |
 | `SCITEX_NOTIFICATION_ERROR_BACKENDS` | Backends for `level="error"` | `audio,emacs,desktop,email` |
 | `SCITEX_NOTIFICATION_CRITICAL_BACKENDS` | Backends for `level="critical"` | `audio,emacs,desktop,matplotlib,email` |
+| `SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT` | Default phone call repeat count | `1` |
 | `SCITEX_NOTIFICATION_TIMEOUT_MATPLOTLIB` | Popup timeout (seconds) | `5.0` |
 | `SCITEX_NOTIFICATION_TIMEOUT_PLAYWRIGHT` | Browser popup timeout (seconds) | `5.0` |
 

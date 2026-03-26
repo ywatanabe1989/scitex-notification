@@ -40,7 +40,7 @@ scitex-notification send "Test" --dry-run
 
 ## call
 
-Make a phone call via Twilio. Requires `SCITEX_NOTIFY_TWILIO_*` env vars.
+Make a phone call via Twilio. Requires `SCITEX_NOTIFICATION_TWILIO_*` env vars.
 
 ```bash
 scitex-notification call MESSAGE [OPTIONS]
@@ -51,7 +51,7 @@ scitex-notification call MESSAGE [OPTIONS]
 | `--title TEXT` | `-t` | — | Call title/context |
 | `--level CHOICE` | `-l` | `info` | Alert level |
 | `--to TEXT` | — | env var | Destination phone number (overrides `SCITEX_NOTIFY_TWILIO_TO`) |
-| `--repeat INT` | `-r` | `1` | Repeat call N times (30s apart; use `2` to bypass iOS silent mode) |
+| `--repeat INT` | `-r` | `$SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT` (default: `1`) | Repeat call N times (30s apart). Use `1` with iOS Emergency Bypass; `2` for iOS "Repeated Calls" bypass. |
 | `--flow-sid TEXT` | — | — | Twilio Studio Flow SID |
 | `--dry-run` | — | off | Print what would happen without calling |
 | `--json` | — | off | Output as structured JSON |
@@ -65,15 +65,15 @@ scitex-notification call "Test" --dry-run
 
 Required env vars:
 ```bash
-export SCITEX_NOTIFY_TWILIO_SID=ACxxxxxxxxxxxxxxxx
-export SCITEX_NOTIFY_TWILIO_TOKEN=your_auth_token
-export SCITEX_NOTIFY_TWILIO_FROM=+15550001111
-export SCITEX_NOTIFY_TWILIO_TO=+81900000000
+export SCITEX_NOTIFICATION_TWILIO_SID=ACxxxxxxxxxxxxxxxx
+export SCITEX_NOTIFICATION_TWILIO_TOKEN=your_auth_token
+export SCITEX_NOTIFICATION_TWILIO_FROM=+15550001111
+export SCITEX_NOTIFICATION_TWILIO_TO=+81900000000
 ```
 
 ## sms
 
-Send an SMS via Twilio. Requires `SCITEX_NOTIFY_TWILIO_*` env vars.
+Send an SMS via Twilio. Requires `SCITEX_NOTIFICATION_TWILIO_*` env vars.
 
 ```bash
 scitex-notification sms MESSAGE [OPTIONS]

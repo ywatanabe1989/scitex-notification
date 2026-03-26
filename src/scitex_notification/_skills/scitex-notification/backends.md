@@ -152,7 +152,7 @@ Backward-compatible fallbacks: `SCITEX_NOTIFY_TWILIO_*`.
 
 `is_available()`: returns `True` only if all four required vars are set.
 
-- `repeat` kwarg: call N times, 30s apart (iOS "Repeated Calls" bypass needs 2+ calls within 3 min)
+- `repeat` kwarg: call N times, 30s apart. Default from `$SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT` (default: `1`). Set to `1` if iOS Emergency Bypass is configured; `2` triggers iOS "Repeated Calls" bypass (2+ calls within 3 min).
 - `flow_sid` kwarg: triggers Twilio Studio Flow instead of direct TwiML
 - TwiML uses voice `"alice"`, language `"en-US"`, repeats message twice with 2s pause
 

@@ -12,6 +12,8 @@ Environment Variables (new prefix, checked first):
     SCITEX_NOTIFICATION_TWILIO_FROM: Twilio phone number (e.g., +1234567890)
     SCITEX_NOTIFICATION_TWILIO_TO: Destination phone number (e.g., +8190xxxx)
     SCITEX_NOTIFICATION_TWILIO_FLOW: Studio Flow SID (optional, e.g., FWxxxxxxx)
+    SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT: Default repeat count (default: 1).
+        Set to 1 if iOS Emergency Bypass is configured. Set to 2 if not (triggers iOS Repeated Calls).
 
 Backward compatible env vars (checked as fallback):
     SCITEX_NOTIFY_TWILIO_SID, SCITEX_NOTIFY_TWILIO_TOKEN, etc.
@@ -70,7 +72,11 @@ class TwilioBackend(BaseNotifyBackend):
             "SCITEX_NOTIFICATION_TWILIO_FLOW",
             "SCITEX_NOTIFY_TWILIO_FLOW",
         )
-        self.repeat = repeat
+        self.repeat = (
+            repeat
+            if repeat != 1
+            else int(os.environ.get("SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT", "1"))
+        )
 
     def is_available(self) -> bool:
         return bool(

@@ -115,7 +115,7 @@ def send(message, title, backend, level, no_fallback, dry_run, as_json):
     "-r",
     type=int,
     default=1,
-    help="Repeat call N times (30s apart; use 2 to bypass iOS silent mode)",
+    help="Repeat call N times (30s apart). Default: $SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT (1)",
 )
 @click.option("--flow-sid", help="Twilio Studio Flow SID (optional)")
 @click.option("--dry-run", is_flag=True, help="Print what would happen without calling")
