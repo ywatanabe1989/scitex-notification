@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scitex-notification"
-version = "0.1.7"
+version = "0.1.8"
 description = "Multi-backend notification system for SciTeX"
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -24,7 +24,6 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
