@@ -42,7 +42,7 @@ Both `notification:` and `ui:` are accepted as top-level keys (backward compat).
 
 ## Environment Variables
 
-Primary prefix `SCITEX_NOTIFICATION_*` is checked first. Fallback prefixes `SCITEX_NOTIFY_*` and `SCITEX_UI_*` are checked as backward-compatible alternatives.
+The canonical prefix is `SCITEX_NOTIFICATION_*`.
 
 | Variable | Purpose | Default |
 |----------|---------|---------|

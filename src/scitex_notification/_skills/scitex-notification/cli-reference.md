@@ -50,7 +50,7 @@ scitex-notification call MESSAGE [OPTIONS]
 |--------|-------|---------|-------------|
 | `--title TEXT` | `-t` | — | Call title/context |
 | `--level CHOICE` | `-l` | `info` | Alert level |
-| `--to TEXT` | — | env var | Destination phone number (overrides `SCITEX_NOTIFY_TWILIO_TO`) |
+| `--to TEXT` | — | env var | Destination phone number (overrides `SCITEX_NOTIFICATION_TWILIO_TO`) |
 | `--repeat INT` | `-r` | `$SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT` (default: `1`) | Repeat call N times (30s apart). Use `1` with iOS Emergency Bypass; `2` for iOS "Repeated Calls" bypass. |
 | `--flow-sid TEXT` | — | — | Twilio Studio Flow SID |
 | `--dry-run` | — | off | Print what would happen without calling |

@@ -26,8 +26,7 @@ Usage:
     stxn.sms("Build done!")
 
 Environment Variables:
-    SCITEX_NOTIFY_DEFAULT_BACKEND: audio, email, desktop, webhook
-    SCITEX_UI_DEFAULT_BACKEND: (deprecated) use SCITEX_NOTIFY_DEFAULT_BACKEND
+    SCITEX_NOTIFICATION_DEFAULT_BACKEND: audio, email, desktop, webhook
     SCITEX_NOTIFICATION_ENV_SRC: path to .env file to auto-load on import
 """
 
@@ -45,7 +44,7 @@ from ._backends import NotifyLevel as _AlertLevel
 from ._backends import available_backends as _available_backends
 from ._backends import get_backend as _get_backend
 
-__version__ = "0.1.7"
+__version__ = "0.2.0"
 
 __all__ = [
     "alert",
@@ -110,11 +109,7 @@ async def alert_async(
     # Determine backends to try
     if backend is None:
         # No backend specified: use fallback priority
-        default = (
-            os.getenv("SCITEX_NOTIFICATION_DEFAULT_BACKEND")
-            or os.getenv("SCITEX_NOTIFY_DEFAULT_BACKEND")
-            or os.getenv("SCITEX_UI_DEFAULT_BACKEND", "audio")
-        )
+        default = os.getenv("SCITEX_NOTIFICATION_DEFAULT_BACKEND", "audio")
         if fallback:
             # Start with default, then try others in priority order
             backends = [default] + [b for b in DEFAULT_FALLBACK_ORDER if b != default]
@@ -253,7 +248,7 @@ async def sms_async(
     title : str, optional
         Prepended to message if provided
     to_number : str, optional
-        Override SCITEX_NOTIFY_TWILIO_TO
+        Override SCITEX_NOTIFICATION_TWILIO_TO
 
     Returns
     -------
@@ -286,7 +281,7 @@ def sms(
     title : str, optional
         Prepended to message if provided
     to_number : str, optional
-        Override SCITEX_NOTIFY_TWILIO_TO
+        Override SCITEX_NOTIFICATION_TWILIO_TO
 
     Returns
     -------

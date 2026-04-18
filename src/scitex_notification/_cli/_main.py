@@ -93,6 +93,13 @@ try:
 except ImportError:
     pass
 
+try:
+    from scitex_dev.cli import skills_click_group
+
+    cli.add_command(skills_click_group(package="scitex-notification"))
+except ImportError:
+    pass
+
 
 @cli.command("list-python-apis")
 @click.option("-v", "--verbose", count=True, help="Verbosity: -v +doc, -vv full doc")

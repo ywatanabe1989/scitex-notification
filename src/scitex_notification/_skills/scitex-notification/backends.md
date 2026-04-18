@@ -85,7 +85,7 @@ Environment variables (checked in order, first non-empty wins):
 | `SCITEX_NOTIFICATION_EMAIL_SMTP_HOST` | SMTP host (default: `smtp.gmail.com`) |
 | `SCITEX_NOTIFICATION_EMAIL_SMTP_PORT` | SMTP port (default: `587`) |
 
-Backward-compatible fallbacks: `SCITEX_NOTIFY_EMAIL_*`, `SCITEX_SCHOLAR_EMAIL_*`, `SCITEX_EMAIL_*`.
+Additional fallbacks for cross-package sharing: `SCITEX_SCHOLAR_EMAIL_*`, `SCITEX_EMAIL_*`.
 
 `is_available()`: returns `True` only if both FROM address and PASSWORD are set.
 
@@ -105,7 +105,7 @@ from scitex_notification._backends._webhook import WebhookBackend
 b = WebhookBackend(url="https://hooks.slack.com/services/...")
 ```
 
-Or via env: `SCITEX_NOTIFICATION_WEBHOOK_URL` (fallbacks: `SCITEX_NOTIFY_WEBHOOK_URL`, `SCITEX_UI_WEBHOOK_URL`).
+Or via env: `SCITEX_NOTIFICATION_WEBHOOK_URL`.
 
 Payload format supports both Slack (`text`) and Discord (`content`) simultaneously.
 
@@ -147,8 +147,6 @@ No SDK dependency — uses `urllib.request` with Basic Auth.
 | `SCITEX_NOTIFICATION_TWILIO_FROM` | Twilio phone number (e.g., `+15550001111`) |
 | `SCITEX_NOTIFICATION_TWILIO_TO` | Destination phone number |
 | `SCITEX_NOTIFICATION_TWILIO_FLOW` | Studio Flow SID (optional, e.g., `FWxxx`) |
-
-Backward-compatible fallbacks: `SCITEX_NOTIFY_TWILIO_*`.
 
 `is_available()`: returns `True` only if all four required vars are set.
 

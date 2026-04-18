@@ -125,6 +125,10 @@ class TelegramChannelServer:
         self.allowed_chat_id = os.getenv("SCITEX_NOTIFICATION_TELEGRAM_CHAT_ID", "")
         self._last_update_id = 0
         self._polling_task: asyncio.Task | None = None
+        self._polling_enabled = (
+            os.getenv("SCITEX_NOTIFICATION_TELEGRAM_POLLING_ENABLED", "false").lower()
+            == "true"
+        )
 
         self.server = Server(
             name="telegram",
@@ -349,8 +353,9 @@ class TelegramChannelServer:
                 ),
             )
 
-            # Start polling in background
-            self._polling_task = asyncio.create_task(self._poll_telegram())
+            # Start polling in background (disabled by default — orochi-server owns Telegram polling)
+            if self._polling_enabled:
+                self._polling_task = asyncio.create_task(self._poll_telegram())
 
             await self.server.run(read_stream, write_stream, init_options)
 
