@@ -1,6 +1,6 @@
 ---
 name: scitex-notification
-description: Multi-backend notification system with fallback priority — audio TTS, desktop, emacs, matplotlib, playwright, email, webhook, Telegram, and Twilio phone/SMS. Use when alerting users, escalating to phone calls, or sending notifications from scripts and AI agents.
+description: One-call alerting across 9 backends — audio TTS (spoken notification), desktop popup, emacs minibuffer, matplotlib banner, playwright browser toast, email (SMTP), webhook (HTTP POST), Telegram message, and Twilio phone call / SMS — with automatic fallback (default order: audio → emacs → matplotlib → playwright → email) and level-based routing (info / warning / error / critical can trigger different backend sets). Drop-in replacement for ad-hoc `smtplib.sendmail`, `requests.post(slack_webhook, ...)`, `plyer.notification.notify`, `twilio.rest.Client().calls.create`, `python-telegram-bot`, and hand-rolled "print + beep + email" patterns. Use whenever the user asks to "notify me when this finishes", "alert me if training fails", "send me an email when done", "call my phone if the server goes down", "text me the result", "push a Telegram message", "beep when the job completes", "escalate to phone call on critical errors", "ping Slack / webhook", or is wiring up notifications from scripts, pipelines, or AI agents.
 allowed-tools: mcp__scitex__notification_*
 ---
 
@@ -52,8 +52,10 @@ scitex-notification mcp start         # Start MCP server
 
 | Tool | Purpose |
 |------|---------|
-| `notification_send` | Send notification via backend(s) with fallback |
-| `notification_call` | Make phone call via Twilio |
-| `notification_sms` | Send SMS via Twilio |
-| `notification_backends` | List backends and availability |
-| `notification_config` | Show current configuration |
+| `notify` | Send alert via one or more backends with fallback |
+| `notify_by_level` | Route by info / warning / error / critical to configured backend sets |
+| `list_notification_backends` | List every registered backend with status |
+| `available_notification_backends` | List backends that are currently working (deps + creds OK) |
+| `get_notification_config` | Show active config (fallback order, level routing, timeouts) |
+
+> Note: `call()` (Twilio phone) and `sms()` (Twilio SMS) are exposed via the Python API and CLI, not as standalone MCP tools. They reach through `notify` when `backend="twilio"`.

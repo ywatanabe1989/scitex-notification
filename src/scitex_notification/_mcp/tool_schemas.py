@@ -17,9 +17,19 @@ def get_tool_schemas() -> list[types.Tool]:
         types.Tool(
             name="notify",
             description=(
-                "Send a notification via configured backends (audio, desktop, email, "
-                "matplotlib, playwright, webhook). Supports multi-backend delivery "
-                "and notification levels (info, warning, error, critical)."
+                "Send an alert through any of 9 backends — `audio` (spoken TTS), "
+                "`desktop` (OS popup), `emacs` (minibuffer), `matplotlib` (banner), "
+                "`playwright` (browser toast), `email` (SMTP), `webhook` (HTTP "
+                "POST), `telegram`, `twilio` (phone call / SMS) — with automatic "
+                "fallback if a backend fails. Drop-in replacement for `smtplib`, "
+                "`plyer.notification`, `requests.post(slack_webhook)`, "
+                "`python-telegram-bot`. Use whenever the user asks to 'notify me', "
+                "'alert me when this finishes', 'beep when done', 'email me the "
+                "result', 'ping me on Telegram', 'send a desktop notification', or "
+                "is wiring up monitoring from scripts / CI / AI agents. Pass "
+                "`backend='email'` for a specific channel, or `backends=['audio', "
+                "'email']` for multi-channel. `level` sets urgency (info / warning "
+                "/ error / critical)."
             ),
             inputSchema={
                 "type": "object",
@@ -62,8 +72,14 @@ def get_tool_schemas() -> list[types.Tool]:
         types.Tool(
             name="notify_by_level",
             description=(
-                "Send notification using backends configured for a specific level. "
-                "Uses level_backends config (e.g., critical -> audio + desktop + email)."
+                "Route a notification through whichever backend set the user has "
+                "pre-configured for that urgency level — e.g. `info` → just emacs, "
+                "`critical` → audio + desktop + email + Twilio phone call. Lets "
+                "callers just say 'this is critical' and let the config decide how "
+                "loudly to shout. Use whenever the user asks to 'alert at error "
+                "level', 'escalate to critical', 'send a warning through my usual "
+                "channels', or has set up `level_backends` in their scitex-"
+                "notification config."
             ),
             inputSchema={
                 "type": "object",
@@ -88,17 +104,40 @@ def get_tool_schemas() -> list[types.Tool]:
         ),
         types.Tool(
             name="list_notification_backends",
-            description="List all notification backends and their status",
+            description=(
+                "Enumerate every registered notification backend (audio, desktop, "
+                "emacs, matplotlib, playwright, email, webhook, telegram, twilio) "
+                "along with its reachability status — dependencies installed, env "
+                "vars set, connections healthy. Use when the user asks 'which "
+                "notifiers are set up?', 'why isn't my Twilio alert working?', "
+                "'is email configured?', or is debugging a silent notification."
+            ),
             inputSchema={"type": "object", "properties": {}},
         ),
         types.Tool(
             name="available_notification_backends",
-            description="Get list of currently available (working) notification backends",
+            description=(
+                "List only the backends that are currently *working* — "
+                "dependencies imported cleanly and credentials / env vars / "
+                "sockets are intact. Shorter than `list_notification_backends` "
+                "and the right check before picking a fallback order at runtime. "
+                "Use when the user asks 'what notifiers actually work right "
+                "now?', 'which backends are live?', or before programmatically "
+                "choosing one."
+            ),
             inputSchema={"type": "object", "properties": {}},
         ),
         types.Tool(
             name="get_notification_config",
-            description="Get current notification configuration (priority, level_backends, timeouts)",
+            description=(
+                "Dump the active notification config — fallback order, per-"
+                "level backend mapping (info/warning/error/critical → which "
+                "backends), per-backend timeouts, Twilio/Telegram/webhook/email "
+                "credentials (with secrets redacted). Use when the user asks "
+                "'show my notification config', 'what's my fallback order?', "
+                "'which backends fire for critical?', or is auditing before "
+                "editing `~/.scitex/notification/config.yaml`."
+            ),
             inputSchema={"type": "object", "properties": {}},
         ),
     ]
