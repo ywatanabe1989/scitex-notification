@@ -31,6 +31,7 @@ def test_backends_dict_has_expected_keys():
         "webhook",
         "matplotlib",
         "playwright",
+        "telegram",
         "twilio",
     }
     assert set(BACKENDS.keys()) == expected_keys
