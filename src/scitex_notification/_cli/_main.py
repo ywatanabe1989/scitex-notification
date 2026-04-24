@@ -16,7 +16,33 @@ import click
 
 from ._helpers import group_to_json, print_help_recursive
 from ._mcp_cmds import mcp
-from ._notify_cmds import call, config, list_backends, send, sms
+from ._notify_cmds import (  # noqa: F401
+    call,
+    list_backends,
+    send_notification,
+    send_sms,
+    show_config,
+)
+
+
+def _deprecated_redirect(old: str, new: str):
+    """Build a hidden Click command that exits 2 with a re-run hint."""
+
+    @click.pass_context
+    def _impl(ctx, **_):
+        click.echo(
+            f"error: `scitex-notification {old}` was renamed to "
+            f"`scitex-notification {new}`.\n"
+            f"Re-run with: scitex-notification {new} <args>",
+            err=True,
+        )
+        ctx.exit(2)
+
+    return click.command(
+        old,
+        hidden=True,
+        context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+    )(_impl)
 
 
 @click.group(
@@ -61,12 +87,16 @@ def cli(ctx, help_recursive, as_json):
             click.echo(ctx.get_help())
 
 
-# Register sub-commands from _notify_cmds
-cli.add_command(send)
+# Register renamed sub-commands + hidden deprecation redirects
+cli.add_command(send_notification)
 cli.add_command(call)
-cli.add_command(sms)
+cli.add_command(send_sms)
 cli.add_command(list_backends)
-cli.add_command(config)
+cli.add_command(show_config)
+cli.add_command(_deprecated_redirect("send", "send-notification"))
+cli.add_command(_deprecated_redirect("sms", "send-sms"))
+cli.add_command(_deprecated_redirect("backends", "list-backends"))
+cli.add_command(_deprecated_redirect("config", "show-config"))
 
 # Register mcp subgroup from _mcp_cmds
 cli.add_command(mcp)

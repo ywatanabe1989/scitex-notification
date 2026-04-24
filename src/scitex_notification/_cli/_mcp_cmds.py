@@ -90,14 +90,29 @@ def mcp_doctor():
         click.secho("\nAll checks passed.", fg="green")
 
 
-@mcp.command("installation")
-def mcp_installation():
+@mcp.command(
+    "installation", hidden=True, context_settings={"ignore_unknown_options": True}
+)
+@click.pass_context
+def mcp_installation_deprecated(ctx):
+    """(deprecated) Renamed to `show-installation`."""
+    click.echo(
+        "error: `scitex-notification mcp installation` was renamed to "
+        "`scitex-notification mcp show-installation`.\n"
+        "Re-run with: scitex-notification mcp show-installation",
+        err=True,
+    )
+    ctx.exit(2)
+
+
+@mcp.command("show-installation")
+def mcp_show_installation():
     """
     Show MCP server installation instructions
 
     \b
     Example:
-      scitex-notification mcp installation
+      scitex-notification mcp show-installation
     """
     config = {
         "mcpServers": {

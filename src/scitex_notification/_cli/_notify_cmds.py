@@ -26,7 +26,7 @@ _BACKEND_CHOICES = [
 _LEVEL_CHOICES = ["info", "warning", "error", "critical"]
 
 
-@click.command()
+@click.command("send-notification")
 @click.argument("message")
 @click.option("--title", "-t", help="Notification title")
 @click.option(
@@ -47,15 +47,15 @@ _LEVEL_CHOICES = ["info", "warning", "error", "critical"]
     "--dry-run", is_flag=True, help="Print what would be sent without sending"
 )
 @click.option("--json", "as_json", is_flag=True, help="Output as structured JSON.")
-def send(message, title, backend, level, no_fallback, dry_run, as_json):
+def send_notification(message, title, backend, level, no_fallback, dry_run, as_json):
     """
     Send a notification via configured backends
 
     \b
     Examples:
-      scitex-notification send "Task complete!"
-      scitex-notification send "Error" --backend email --level error
-      scitex-notification send "Hello" --json
+      scitex-notification send-notification "Task complete!"
+      scitex-notification send-notification "Error" --backend email --level error
+      scitex-notification send-notification "Hello" --json
     """
     if dry_run:
         click.echo(
@@ -182,13 +182,13 @@ def call(message, title, level, to_number, repeat, flow_sid, dry_run, as_json):
         fatal(str(e))
 
 
-@click.command()
+@click.command("send-sms")
 @click.argument("message")
 @click.option("--title", "-t", help="SMS title/subject (prepended to message)")
 @click.option("--to", "to_number", help="Destination phone number (overrides default)")
 @click.option("--dry-run", is_flag=True, help="Print what would happen without sending")
 @click.option("--json", "as_json", is_flag=True, help="Output as structured JSON.")
-def sms(message, title, to_number, dry_run, as_json):
+def send_sms(message, title, to_number, dry_run, as_json):
     """
     Send an SMS via Twilio
 
@@ -201,8 +201,8 @@ def sms(message, title, to_number, dry_run, as_json):
 
     \b
     Examples:
-      scitex-notification sms "Build finished!"
-      scitex-notification sms "Alert!" --to +61400000000
+      scitex-notification send-sms "Build finished!"
+      scitex-notification send-sms "Alert!" --to +61400000000
     """
     kwargs = {}
     if to_number:
@@ -237,7 +237,7 @@ def sms(message, title, to_number, dry_run, as_json):
         fatal(str(e))
 
 
-@click.command(name="backends")
+@click.command(name="list-backends")
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def list_backends(as_json):
     """
@@ -245,8 +245,8 @@ def list_backends(as_json):
 
     \b
     Example:
-      scitex-notification backends
-      scitex-notification backends --json
+      scitex-notification list-backends
+      scitex-notification list-backends --json
     """
     try:
         from scitex_notification import DEFAULT_FALLBACK_ORDER, available_backends
@@ -289,16 +289,16 @@ def list_backends(as_json):
         fatal(str(e))
 
 
-@click.command()
+@click.command("show-config")
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def config(as_json):
+def show_config(as_json):
     """
     Show current notification configuration
 
     \b
     Example:
-      scitex-notification config
-      scitex-notification config --json
+      scitex-notification show-config
+      scitex-notification show-config --json
     """
     try:
         from scitex_notification._backends._config import get_config
