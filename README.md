@@ -27,6 +27,16 @@
 
 ---
 
+> **Interfaces:** Python ⭐⭐⭐ (primary) · CLI ⭐⭐ · MCP ⭐⭐ · Skills ⭐⭐ · Hook — · HTTP —
+
+## Problem and Solution
+
+| # | Problem | Solution |
+|---|---------|----------|
+| 1 | **Ad-hoc alerting zoo** — `smtplib.sendmail`, `requests.post(slack_webhook, …)`, `plyer.notify`, `twilio.rest.Client`, `print + beep` all demand different APIs, env vars, and error handling | **One call, nine backends** — `stxn.alert("done")` routes across audio TTS, desktop, emacs, matplotlib, playwright, email, webhook, Telegram, and Twilio with a unified signature |
+| 2 | **Silent failures waste hours** — a webhook 500s or SMTP is down and the agent never tells you, so you stare at the terminal "just in case" | **Automatic fallback chain** — default order audio → emacs → matplotlib → playwright → email; first live backend wins, and level-based routing escalates `critical` to phone/SMS |
+| 3 | **AI agents have no voice** — long-running jobs and overnight training finish unnoticed; you can't leave your desk or sleep through a run | **Escalation to phone/SMS** — `stxn.call()` / `stxn.sms()` via Twilio wake you for critical events; audio TTS covers the room, Telegram / webhook covers everyone else |
+
 ## Problem
 
 Developers delegate tasks to AI coding agents — and then wait. Staring at terminals wastes time and drains cognitive resources. Sitting for hours waiting for results takes a physical toll, too.
