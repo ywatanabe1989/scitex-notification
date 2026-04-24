@@ -71,10 +71,32 @@ cli.add_command(config)
 # Register mcp subgroup from _mcp_cmds
 cli.add_command(mcp)
 
+
+@cli.group("telegram-channel")
+def telegram_channel_group():
+    """Telegram channel for Claude Code (bidirectional chat)."""
+    pass
+
+
+@telegram_channel_group.command("start")
+def telegram_channel_start():
+    """Start the Telegram channel MCP server for Claude Code."""
+    from ..telegram_channel import main as _telegram_main
+
+    _telegram_main()
+
+
 try:
     from scitex_dev.cli import docs_click_group
 
     cli.add_command(docs_click_group(package="scitex-notification"))
+except ImportError:
+    pass
+
+try:
+    from scitex_dev.cli import skills_click_group
+
+    cli.add_command(skills_click_group(package="scitex-notification"))
 except ImportError:
     pass
 

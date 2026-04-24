@@ -1,5 +1,4 @@
 ---
-name: backends
 description: Per-backend setup requirements, environment variables, and availability conditions for all nine notification backends in scitex-notification.
 ---
 
@@ -86,7 +85,7 @@ Environment variables (checked in order, first non-empty wins):
 | `SCITEX_NOTIFICATION_EMAIL_SMTP_HOST` | SMTP host (default: `smtp.gmail.com`) |
 | `SCITEX_NOTIFICATION_EMAIL_SMTP_PORT` | SMTP port (default: `587`) |
 
-Backward-compatible fallbacks: `SCITEX_NOTIFY_EMAIL_*`, `SCITEX_SCHOLAR_EMAIL_*`, `SCITEX_EMAIL_*`.
+Additional fallbacks for cross-package sharing: `SCITEX_SCHOLAR_EMAIL_*`, `SCITEX_EMAIL_*`.
 
 `is_available()`: returns `True` only if both FROM address and PASSWORD are set.
 
@@ -106,7 +105,7 @@ from scitex_notification._backends._webhook import WebhookBackend
 b = WebhookBackend(url="https://hooks.slack.com/services/...")
 ```
 
-Or via env: `SCITEX_NOTIFICATION_WEBHOOK_URL` (fallbacks: `SCITEX_NOTIFY_WEBHOOK_URL`, `SCITEX_UI_WEBHOOK_URL`).
+Or via env: `SCITEX_NOTIFICATION_WEBHOOK_URL`.
 
 Payload format supports both Slack (`text`) and Discord (`content`) simultaneously.
 
@@ -149,11 +148,9 @@ No SDK dependency — uses `urllib.request` with Basic Auth.
 | `SCITEX_NOTIFICATION_TWILIO_TO` | Destination phone number |
 | `SCITEX_NOTIFICATION_TWILIO_FLOW` | Studio Flow SID (optional, e.g., `FWxxx`) |
 
-Backward-compatible fallbacks: `SCITEX_NOTIFY_TWILIO_*`.
-
 `is_available()`: returns `True` only if all four required vars are set.
 
-- `repeat` kwarg: call N times, 30s apart (iOS "Repeated Calls" bypass needs 2+ calls within 3 min)
+- `repeat` kwarg: call N times, 30s apart. Default from `$SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT` (default: `1`). Set to `1` if iOS Emergency Bypass is configured; `2` triggers iOS "Repeated Calls" bypass (2+ calls within 3 min).
 - `flow_sid` kwarg: triggers Twilio Studio Flow instead of direct TwiML
 - TwiML uses voice `"alice"`, language `"en-US"`, repeats message twice with 2s pause
 

@@ -9,8 +9,7 @@ Priority resolution:
 
 Configuration sources:
 1. YAML file: path from SCITEX_NOTIFICATION_CONFIG env var
-2. Environment variables: SCITEX_NOTIFICATION_* (with backward compat for
-   SCITEX_NOTIFY_* and SCITEX_UI_*)
+2. Environment variables: SCITEX_NOTIFICATION_*
 
 Env file sourcing:
     If SCITEX_NOTIFICATION_ENV_SRC is set, that file is sourced before
@@ -32,7 +31,7 @@ Example YAML:
         matplotlib: 5.0
         playwright: 5.0
 
-Environment variables (new prefix, checked first):
+Environment variables:
     SCITEX_NOTIFICATION_CONFIG: Path to custom config YAML file
     SCITEX_NOTIFICATION_ENV_SRC: Path to env file to source before reading vars
     SCITEX_NOTIFICATION_DEFAULT_BACKEND: audio
@@ -43,13 +42,6 @@ Environment variables (new prefix, checked first):
     SCITEX_NOTIFICATION_CRITICAL_BACKENDS: audio,desktop,email
     SCITEX_NOTIFICATION_TIMEOUT_MATPLOTLIB: 5.0
     SCITEX_NOTIFICATION_TIMEOUT_PLAYWRIGHT: 5.0
-
-Backward compatible env vars (checked as fallback):
-    SCITEX_NOTIFY_CONFIG, SCITEX_UI_CONFIG
-    SCITEX_NOTIFY_DEFAULT_BACKEND, SCITEX_UI_DEFAULT_BACKEND
-    SCITEX_NOTIFY_BACKEND_PRIORITY, SCITEX_UI_BACKEND_PRIORITY
-    SCITEX_NOTIFY_{LEVEL}_BACKENDS, SCITEX_UI_{LEVEL}_BACKENDS
-    SCITEX_NOTIFY_TIMEOUT_{BACKEND}, SCITEX_UI_TIMEOUT_{BACKEND}
 """
 
 from __future__ import annotations
@@ -146,15 +138,6 @@ def _load_yaml_config(config_path: str) -> dict:
         return {}
 
 
-def _getenv(*names: str) -> Optional[str]:
-    """Return the first non-empty value found among the given env var names."""
-    for name in names:
-        val = os.getenv(name)
-        if val:
-            return val
-    return None
-
-
 class UIConfig:
     """Configuration manager for scitex_notification (standalone)."""
 
@@ -190,11 +173,7 @@ class UIConfig:
             _source_env_file(env_src)
 
         # 2. Load YAML config if a path is available
-        config_path = self._config_path or _getenv(
-            "SCITEX_NOTIFICATION_CONFIG",
-            "SCITEX_NOTIFY_CONFIG",
-            "SCITEX_UI_CONFIG",
-        )
+        config_path = self._config_path or os.getenv("SCITEX_NOTIFICATION_CONFIG")
         if config_path:
             yaml_config = _load_yaml_config(config_path)
             if yaml_config:
@@ -212,46 +191,26 @@ class UIConfig:
         self._load_env_overrides()
 
     def _load_env_overrides(self):
-        """Load environment variable overrides.
-
-        Checks SCITEX_NOTIFICATION_* first, falls back to SCITEX_NOTIFY_*
-        then SCITEX_UI_* for backward compat.
-        """
-        default_backend = _getenv(
-            "SCITEX_NOTIFICATION_DEFAULT_BACKEND",
-            "SCITEX_NOTIFY_DEFAULT_BACKEND",
-            "SCITEX_UI_DEFAULT_BACKEND",
-        )
+        """Load environment variable overrides from SCITEX_NOTIFICATION_* vars."""
+        default_backend = os.getenv("SCITEX_NOTIFICATION_DEFAULT_BACKEND")
         if default_backend:
             self._config["default_backend"] = default_backend
 
-        backend_priority = _getenv(
-            "SCITEX_NOTIFICATION_BACKEND_PRIORITY",
-            "SCITEX_NOTIFY_BACKEND_PRIORITY",
-            "SCITEX_UI_BACKEND_PRIORITY",
-        )
+        backend_priority = os.getenv("SCITEX_NOTIFICATION_BACKEND_PRIORITY")
         if backend_priority:
             self._config["backend_priority"] = backend_priority.split(",")
 
         # Level-specific backends from env
         for level in ["info", "warning", "error", "critical"]:
             level_upper = level.upper()
-            env_val = _getenv(
-                f"SCITEX_NOTIFICATION_{level_upper}_BACKENDS",
-                f"SCITEX_NOTIFY_{level_upper}_BACKENDS",
-                f"SCITEX_UI_{level_upper}_BACKENDS",
-            )
+            env_val = os.getenv(f"SCITEX_NOTIFICATION_{level_upper}_BACKENDS")
             if env_val:
                 self._config["level_backends"][level] = env_val.split(",")
 
         # Timeouts from env
         for backend in ["matplotlib", "playwright"]:
             backend_upper = backend.upper()
-            env_val = _getenv(
-                f"SCITEX_NOTIFICATION_TIMEOUT_{backend_upper}",
-                f"SCITEX_NOTIFY_TIMEOUT_{backend_upper}",
-                f"SCITEX_UI_TIMEOUT_{backend_upper}",
-            )
+            env_val = os.getenv(f"SCITEX_NOTIFICATION_TIMEOUT_{backend_upper}")
             if env_val:
                 try:
                     self._config["timeouts"][backend] = float(env_val)

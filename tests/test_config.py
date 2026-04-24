@@ -3,8 +3,7 @@
 """Tests for the notification configuration module.
 
 Covers:
-- SCITEX_NOTIFICATION_DEFAULT_BACKEND env var (new prefix)
-- SCITEX_NOTIFY_DEFAULT_BACKEND env var (backward compat)
+- SCITEX_NOTIFICATION_DEFAULT_BACKEND env var
 - Default config values when no env vars are set
 - UIConfig singleton and reset
 - get_config() helper
@@ -18,10 +17,7 @@ from __future__ import annotations
 
 _CONFIG_ENV_VARS = [
     "SCITEX_NOTIFICATION_DEFAULT_BACKEND",
-    "SCITEX_NOTIFY_DEFAULT_BACKEND",
-    "SCITEX_UI_DEFAULT_BACKEND",
     "SCITEX_NOTIFICATION_BACKEND_PRIORITY",
-    "SCITEX_NOTIFY_BACKEND_PRIORITY",
 ]
 
 
@@ -32,9 +28,9 @@ def _clean_env(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# test_env_var_new_prefix
+# test_env_var_default_backend
 # ---------------------------------------------------------------------------
-def test_env_var_new_prefix(monkeypatch):
+def test_env_var_default_backend(monkeypatch):
     """SCITEX_NOTIFICATION_DEFAULT_BACKEND should set default_backend."""
     from scitex_notification._backends._config import UIConfig
 
@@ -44,39 +40,6 @@ def test_env_var_new_prefix(monkeypatch):
     UIConfig.reset()
     cfg = UIConfig()
     assert cfg.default_backend == "email"
-    UIConfig.reset()
-
-
-# ---------------------------------------------------------------------------
-# test_env_var_backward_compat
-# ---------------------------------------------------------------------------
-def test_env_var_backward_compat(monkeypatch):
-    """SCITEX_NOTIFY_DEFAULT_BACKEND is accepted when new prefix is absent."""
-    from scitex_notification._backends._config import UIConfig
-
-    _clean_env(monkeypatch)
-    monkeypatch.setenv("SCITEX_NOTIFY_DEFAULT_BACKEND", "webhook")
-
-    UIConfig.reset()
-    cfg = UIConfig()
-    assert cfg.default_backend == "webhook"
-    UIConfig.reset()
-
-
-# ---------------------------------------------------------------------------
-# test_new_prefix_takes_priority_over_old
-# ---------------------------------------------------------------------------
-def test_new_prefix_takes_priority_over_old(monkeypatch):
-    """New SCITEX_NOTIFICATION_* prefix takes precedence over SCITEX_NOTIFY_*."""
-    from scitex_notification._backends._config import UIConfig
-
-    _clean_env(monkeypatch)
-    monkeypatch.setenv("SCITEX_NOTIFICATION_DEFAULT_BACKEND", "matplotlib")
-    monkeypatch.setenv("SCITEX_NOTIFY_DEFAULT_BACKEND", "audio")
-
-    UIConfig.reset()
-    cfg = UIConfig()
-    assert cfg.default_backend == "matplotlib"
     UIConfig.reset()
 
 

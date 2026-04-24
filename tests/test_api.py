@@ -88,6 +88,7 @@ def test_available_backends_contains_known():
         "emacs",
         "matplotlib",
         "playwright",
+        "telegram",
         "webhook",
         "twilio",
     }

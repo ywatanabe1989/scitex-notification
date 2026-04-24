@@ -115,7 +115,7 @@ def send(message, title, backend, level, no_fallback, dry_run, as_json):
     "-r",
     type=int,
     default=1,
-    help="Repeat call N times (30s apart; use 2 to bypass iOS silent mode)",
+    help="Repeat call N times (30s apart). Default: $SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT (1)",
 )
 @click.option("--flow-sid", help="Twilio Studio Flow SID (optional)")
 @click.option("--dry-run", is_flag=True, help="Print what would happen without calling")
@@ -126,10 +126,10 @@ def call(message, title, level, to_number, repeat, flow_sid, dry_run, as_json):
 
     \b
     Requires env vars:
-      SCITEX_NOTIFY_TWILIO_SID    - Twilio Account SID
-      SCITEX_NOTIFY_TWILIO_TOKEN  - Twilio Auth Token
-      SCITEX_NOTIFY_TWILIO_FROM   - Twilio phone number
-      SCITEX_NOTIFY_TWILIO_TO     - Destination phone number
+      SCITEX_NOTIFICATION_TWILIO_SID    - Twilio Account SID
+      SCITEX_NOTIFICATION_TWILIO_TOKEN  - Twilio Auth Token
+      SCITEX_NOTIFICATION_TWILIO_FROM   - Twilio phone number
+      SCITEX_NOTIFICATION_TWILIO_TO     - Destination phone number
 
     \b
     Examples:
@@ -176,7 +176,7 @@ def call(message, title, level, to_number, repeat, flow_sid, dry_run, as_json):
             click.secho("Call initiated successfully", fg="green")
         else:
             click.secho("Failed to make call", fg="red")
-            click.echo("Check SCITEX_NOTIFY_TWILIO_* env vars are set correctly.")
+            click.echo("Check SCITEX_NOTIFICATION_TWILIO_* env vars are set correctly.")
             sys.exit(1)
     except Exception as e:
         fatal(str(e))
@@ -194,10 +194,10 @@ def sms(message, title, to_number, dry_run, as_json):
 
     \b
     Requires env vars:
-      SCITEX_NOTIFY_TWILIO_SID    - Twilio Account SID
-      SCITEX_NOTIFY_TWILIO_TOKEN  - Twilio Auth Token
-      SCITEX_NOTIFY_TWILIO_FROM   - Twilio phone number
-      SCITEX_NOTIFY_TWILIO_TO     - Destination phone number
+      SCITEX_NOTIFICATION_TWILIO_SID    - Twilio Account SID
+      SCITEX_NOTIFICATION_TWILIO_TOKEN  - Twilio Auth Token
+      SCITEX_NOTIFICATION_TWILIO_FROM   - Twilio phone number
+      SCITEX_NOTIFICATION_TWILIO_TO     - Destination phone number
 
     \b
     Examples:
@@ -231,7 +231,7 @@ def sms(message, title, to_number, dry_run, as_json):
             click.secho("SMS sent successfully", fg="green")
         else:
             click.secho("Failed to send SMS", fg="red")
-            click.echo("Check SCITEX_NOTIFY_TWILIO_* env vars are set correctly.")
+            click.echo("Check SCITEX_NOTIFICATION_TWILIO_* env vars are set correctly.")
             sys.exit(1)
     except Exception as e:
         fatal(str(e))

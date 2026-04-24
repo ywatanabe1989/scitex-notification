@@ -6,15 +6,14 @@
 Makes an actual phone call to wake up the user.
 Supports both direct TwiML calls and Studio Flow executions.
 
-Environment Variables (new prefix, checked first):
+Environment Variables:
     SCITEX_NOTIFICATION_TWILIO_SID: Twilio Account SID
     SCITEX_NOTIFICATION_TWILIO_TOKEN: Twilio Auth Token
     SCITEX_NOTIFICATION_TWILIO_FROM: Twilio phone number (e.g., +1234567890)
     SCITEX_NOTIFICATION_TWILIO_TO: Destination phone number (e.g., +8190xxxx)
     SCITEX_NOTIFICATION_TWILIO_FLOW: Studio Flow SID (optional, e.g., FWxxxxxxx)
-
-Backward compatible env vars (checked as fallback):
-    SCITEX_NOTIFY_TWILIO_SID, SCITEX_NOTIFY_TWILIO_TOKEN, etc.
+    SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT: Default repeat count (default: 1).
+        Set to 1 if iOS Emergency Bypass is configured. Set to 2 if not (triggers iOS Repeated Calls).
 """
 
 from __future__ import annotations
@@ -25,15 +24,6 @@ from datetime import datetime
 from typing import Optional
 
 from ._types import BaseNotifyBackend, NotifyLevel, NotifyResult
-
-
-def _getenv_twilio(*names: str) -> str:
-    """Return the first non-empty value among the given env var names."""
-    for name in names:
-        val = os.getenv(name)
-        if val:
-            return val
-    return ""
 
 
 class TwilioBackend(BaseNotifyBackend):
@@ -50,27 +40,22 @@ class TwilioBackend(BaseNotifyBackend):
         flow_sid: Optional[str] = None,
         repeat: int = 1,
     ):
-        self.account_sid = account_sid or _getenv_twilio(
-            "SCITEX_NOTIFICATION_TWILIO_SID",
-            "SCITEX_NOTIFY_TWILIO_SID",
+        self.account_sid = account_sid or os.getenv(
+            "SCITEX_NOTIFICATION_TWILIO_SID", ""
         )
-        self.auth_token = auth_token or _getenv_twilio(
-            "SCITEX_NOTIFICATION_TWILIO_TOKEN",
-            "SCITEX_NOTIFY_TWILIO_TOKEN",
+        self.auth_token = auth_token or os.getenv(
+            "SCITEX_NOTIFICATION_TWILIO_TOKEN", ""
         )
-        self.from_number = from_number or _getenv_twilio(
-            "SCITEX_NOTIFICATION_TWILIO_FROM",
-            "SCITEX_NOTIFY_TWILIO_FROM",
+        self.from_number = from_number or os.getenv(
+            "SCITEX_NOTIFICATION_TWILIO_FROM", ""
         )
-        self.to_number = to_number or _getenv_twilio(
-            "SCITEX_NOTIFICATION_TWILIO_TO",
-            "SCITEX_NOTIFY_TWILIO_TO",
+        self.to_number = to_number or os.getenv("SCITEX_NOTIFICATION_TWILIO_TO", "")
+        self.flow_sid = flow_sid or os.getenv("SCITEX_NOTIFICATION_TWILIO_FLOW", "")
+        self.repeat = (
+            repeat
+            if repeat != 1
+            else int(os.environ.get("SCITEX_NOTIFICATION_PHONE_CALL_N_REPEAT", "1"))
         )
-        self.flow_sid = flow_sid or _getenv_twilio(
-            "SCITEX_NOTIFICATION_TWILIO_FLOW",
-            "SCITEX_NOTIFY_TWILIO_FLOW",
-        )
-        self.repeat = repeat
 
     def is_available(self) -> bool:
         return bool(
@@ -288,22 +273,10 @@ async def send_sms(
     -------
     NotifyResult
     """
-    sid = account_sid or _getenv_twilio(
-        "SCITEX_NOTIFICATION_TWILIO_SID",
-        "SCITEX_NOTIFY_TWILIO_SID",
-    )
-    token = auth_token or _getenv_twilio(
-        "SCITEX_NOTIFICATION_TWILIO_TOKEN",
-        "SCITEX_NOTIFY_TWILIO_TOKEN",
-    )
-    from_num = from_number or _getenv_twilio(
-        "SCITEX_NOTIFICATION_TWILIO_FROM",
-        "SCITEX_NOTIFY_TWILIO_FROM",
-    )
-    to_num = to_number or _getenv_twilio(
-        "SCITEX_NOTIFICATION_TWILIO_TO",
-        "SCITEX_NOTIFY_TWILIO_TO",
-    )
+    sid = account_sid or os.getenv("SCITEX_NOTIFICATION_TWILIO_SID", "")
+    token = auth_token or os.getenv("SCITEX_NOTIFICATION_TWILIO_TOKEN", "")
+    from_num = from_number or os.getenv("SCITEX_NOTIFICATION_TWILIO_FROM", "")
+    to_num = to_number or os.getenv("SCITEX_NOTIFICATION_TWILIO_TO", "")
 
     if not all([sid, token, from_num, to_num]):
         return NotifyResult(

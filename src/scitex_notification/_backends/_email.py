@@ -46,12 +46,10 @@ def _send_email(
         Plain-text email body.
     from_addr : str, optional
         Sender address. Falls back to SCITEX_NOTIFICATION_EMAIL_FROM /
-        SCITEX_NOTIFY_EMAIL_FROM / SCITEX_SCHOLAR_EMAIL_NOREPLY /
-        SCITEX_EMAIL_NOREPLY / SCITEX_EMAIL_AGENT.
+        SCITEX_SCHOLAR_EMAIL_NOREPLY / SCITEX_EMAIL_NOREPLY / SCITEX_EMAIL_AGENT.
     password : str, optional
         SMTP password. Falls back to SCITEX_NOTIFICATION_EMAIL_PASSWORD /
-        SCITEX_NOTIFY_EMAIL_PASSWORD / SCITEX_SCHOLAR_EMAIL_PASSWORD /
-        SCITEX_EMAIL_PASSWORD.
+        SCITEX_SCHOLAR_EMAIL_PASSWORD / SCITEX_EMAIL_PASSWORD.
     smtp_host : str, optional
         SMTP host. Falls back to SCITEX_NOTIFICATION_EMAIL_SMTP_HOST
         (default: smtp.gmail.com).
@@ -63,8 +61,6 @@ def _send_email(
         from_addr
         or _getenv_email(
             "SCITEX_NOTIFICATION_EMAIL_FROM",
-            "SCITEX_NOTIFY_EMAIL_FROM",
-            "SCITEX_UI_EMAIL_NOTIFICATION_FROM",
             "SCITEX_SCHOLAR_EMAIL_NOREPLY",
             "SCITEX_SCHOLAR_FROM_EMAIL_ADDRESS",
             "SCITEX_EMAIL_NOREPLY",
@@ -77,7 +73,6 @@ def _send_email(
         password
         or _getenv_email(
             "SCITEX_NOTIFICATION_EMAIL_PASSWORD",
-            "SCITEX_NOTIFY_EMAIL_PASSWORD",
             "SCITEX_SCHOLAR_EMAIL_PASSWORD",
             "SCITEX_SCHOLAR_FROM_EMAIL_PASSWORD",
             "SCITEX_EMAIL_PASSWORD",
@@ -122,13 +117,9 @@ class EmailBackend(BaseNotifyBackend):
     ):
         self.recipient = recipient or _getenv_email(
             "SCITEX_NOTIFICATION_EMAIL_TO",
-            "SCITEX_NOTIFY_EMAIL_TO",
-            "SCITEX_UI_EMAIL_NOTIFICATION_TO",
         )
         self.sender = sender or _getenv_email(
             "SCITEX_NOTIFICATION_EMAIL_FROM",
-            "SCITEX_NOTIFY_EMAIL_FROM",
-            "SCITEX_UI_EMAIL_NOTIFICATION_FROM",
             "SCITEX_SCHOLAR_EMAIL_NOREPLY",
             "SCITEX_SCHOLAR_FROM_EMAIL_ADDRESS",
             "SCITEX_EMAIL_NOREPLY",
@@ -139,8 +130,6 @@ class EmailBackend(BaseNotifyBackend):
         has_from = bool(
             _getenv_email(
                 "SCITEX_NOTIFICATION_EMAIL_FROM",
-                "SCITEX_NOTIFY_EMAIL_FROM",
-                "SCITEX_UI_EMAIL_NOTIFICATION_FROM",
                 "SCITEX_SCHOLAR_EMAIL_NOREPLY",
                 "SCITEX_SCHOLAR_FROM_EMAIL_ADDRESS",
                 "SCITEX_EMAIL_NOREPLY",
@@ -150,7 +139,6 @@ class EmailBackend(BaseNotifyBackend):
         has_password = bool(
             _getenv_email(
                 "SCITEX_NOTIFICATION_EMAIL_PASSWORD",
-                "SCITEX_NOTIFY_EMAIL_PASSWORD",
                 "SCITEX_SCHOLAR_EMAIL_PASSWORD",
                 "SCITEX_SCHOLAR_FROM_EMAIL_PASSWORD",
                 "SCITEX_EMAIL_PASSWORD",
