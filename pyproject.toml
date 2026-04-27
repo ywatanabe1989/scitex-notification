@@ -40,10 +40,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-audio = ["scitex-audio>=0.1.0"]
-mcp = ["mcp>=1.0"]
-playwright = ["playwright>=1.40"]
-twilio = ["twilio>=8.0"]
+audio = [
+    "scitex-audio>=0.1.0",
+]
+mcp = [
+    "mcp>=1.0",
+]
+playwright = [
+    "playwright>=1.40",
+]
+twilio = [
+    "twilio>=8.0",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
@@ -58,7 +66,10 @@ docs = [
     "sphinx-autodoc-typehints>=1.25",
 ]
 all = [
-    "scitex-notification[audio,mcp,playwright,twilio,dev,docs]",
+    "scitex-notification[audio]",
+    "scitex-notification[mcp]",
+    "scitex-notification[playwright]",
+    "scitex-notification[twilio]",
 ]
 
 [project.scripts]
