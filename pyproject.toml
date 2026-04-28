@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scitex-notification"
-version = "0.2.1"
+version = "0.2.2"
 description = "Multi-backend notification system for SciTeX"
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -80,10 +80,10 @@ scitex-notification = "scitex_notification._cli:main"
 scitex_notification = "scitex_notification._linter_plugin:get_plugin"
 
 [project.entry-points."scitex_dev.docs"]
-scitex_notification = "scitex_notification"
+scitex-notification = "scitex_notification"
 
 [project.entry-points."scitex_dev.skills"]
-scitex_notification = "scitex_notification"
+scitex-notification = "scitex_notification"
 
 [project.urls]
 Homepage = "https://github.com/ywatanabe1989/scitex-notification"
