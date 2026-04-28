@@ -57,7 +57,7 @@ def test_cli_no_args(runner):
 # ---------------------------------------------------------------------------
 def test_cli_backends(runner):
     """backends command should list backend names."""
-    result = runner.invoke(cli, ["backends"])
+    result = runner.invoke(cli, ["list-backends"])
     assert result.exit_code == 0
     # At minimum the command should run and output some text
     assert len(result.output) > 0
@@ -67,7 +67,7 @@ def test_cli_backends_json(runner):
     """backends --json should output valid JSON with 'available' key."""
     import json
 
-    result = runner.invoke(cli, ["backends", "--json"])
+    result = runner.invoke(cli, ["list-backends", "--json"])
     assert result.exit_code == 0
     data = json.loads(result.output)
     # Result envelope: data is under "data" key
@@ -80,7 +80,7 @@ def test_cli_backends_json(runner):
 # ---------------------------------------------------------------------------
 def test_send_dry_run(runner):
     """send --dry-run should print what would be sent without side effects."""
-    result = runner.invoke(cli, ["send", "Test message", "--dry-run"])
+    result = runner.invoke(cli, ["send-notification", "Test message", "--dry-run"])
     assert result.exit_code == 0
     assert "dry-run" in result.output
     assert "Test message" in result.output
@@ -88,7 +88,7 @@ def test_send_dry_run(runner):
 
 def test_send_dry_run_with_backend(runner):
     """send --dry-run --backend desktop should mention the backend."""
-    result = runner.invoke(cli, ["send", "Hello", "--dry-run", "--backend", "desktop"])
+    result = runner.invoke(cli, ["send-notification", "Hello", "--dry-run", "--backend", "desktop"])
     assert result.exit_code == 0
     assert "dry-run" in result.output
     assert "Hello" in result.output
@@ -96,7 +96,7 @@ def test_send_dry_run_with_backend(runner):
 
 def test_send_dry_run_with_level(runner):
     """send --dry-run --level error should mention the level."""
-    result = runner.invoke(cli, ["send", "Error msg", "--dry-run", "--level", "error"])
+    result = runner.invoke(cli, ["send-notification", "Error msg", "--dry-run", "--level", "error"])
     assert result.exit_code == 0
     assert "dry-run" in result.output
 
@@ -124,7 +124,7 @@ def test_call_dry_run_with_repeat(runner):
 # ---------------------------------------------------------------------------
 def test_sms_dry_run(runner):
     """sms --dry-run should print without sending."""
-    result = runner.invoke(cli, ["sms", "Build done!", "--dry-run"])
+    result = runner.invoke(cli, ["send-sms", "Build done!", "--dry-run"])
     assert result.exit_code == 0
     assert "dry-run" in result.output
     assert "Build done!" in result.output
@@ -132,7 +132,7 @@ def test_sms_dry_run(runner):
 
 def test_sms_dry_run_with_title(runner):
     """sms --dry-run --title prepends title context."""
-    result = runner.invoke(cli, ["sms", "Finished", "--dry-run", "--title", "CI"])
+    result = runner.invoke(cli, ["send-sms", "Finished", "--dry-run", "--title", "CI"])
     assert result.exit_code == 0
     assert "dry-run" in result.output
 
@@ -142,7 +142,7 @@ def test_sms_dry_run_with_title(runner):
 # ---------------------------------------------------------------------------
 def test_config_command(runner):
     """config command should display configuration without error."""
-    result = runner.invoke(cli, ["config"])
+    result = runner.invoke(cli, ["show-config"])
     assert result.exit_code == 0
     assert len(result.output) > 0
 
@@ -151,7 +151,7 @@ def test_config_json(runner):
     """config --json should output parseable JSON with known keys."""
     import json
 
-    result = runner.invoke(cli, ["config", "--json"])
+    result = runner.invoke(cli, ["show-config", "--json"])
     assert result.exit_code == 0
     data = json.loads(result.output)
     inner = data.get("data", data)
@@ -164,7 +164,7 @@ def test_config_json(runner):
 def test_send_mocked_success(runner):
     """send without --dry-run mocked to succeed should print success message."""
     with patch("scitex_notification.alert", return_value=True):
-        result = runner.invoke(cli, ["send", "Test"])
+        result = runner.invoke(cli, ["send-notification", "Test"])
     assert result.exit_code == 0
     assert "sent" in result.output.lower() or "success" in result.output.lower()
 
@@ -172,7 +172,7 @@ def test_send_mocked_success(runner):
 def test_send_mocked_failure(runner):
     """send without --dry-run mocked to fail should exit non-zero."""
     with patch("scitex_notification.alert", return_value=False):
-        result = runner.invoke(cli, ["send", "Test"])
+        result = runner.invoke(cli, ["send-notification", "Test"])
     assert result.exit_code != 0
 
 
