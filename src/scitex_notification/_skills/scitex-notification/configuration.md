@@ -1,5 +1,7 @@
 ---
 description: scitex-notification configuration — YAML config file, UIConfig singleton, environment variables, and level-based backend routing.
+name: configuration
+tags: [scitex-notification, scitex-package]
 ---
 
 # Configuration

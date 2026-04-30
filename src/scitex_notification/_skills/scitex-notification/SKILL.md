@@ -2,6 +2,7 @@
 name: scitex-notification
 description: One-call alerting across 9 backends — audio TTS (spoken notification), desktop popup, emacs minibuffer, matplotlib banner, playwright browser toast, email (SMTP), webhook (HTTP POST), Telegram message, and Twilio phone call / SMS — with automatic fallback (default order: audio → emacs → matplotlib → playwright → email) and level-based routing (info / warning / error / critical can trigger different backend sets). Drop-in replacement for ad-hoc `smtplib.sendmail`, `requests.post(slack_webhook, ...)`, `plyer.notification.notify`, `twilio.rest.Client().calls.create`, `python-telegram-bot`, and hand-rolled "print + beep + email" patterns. Use whenever the user asks to "notify me when this finishes", "alert me if training fails", "send me an email when done", "call my phone if the server goes down", "text me the result", "push a Telegram message", "beep when the job completes", "escalate to phone call on critical errors", "ping Slack / webhook", or is wiring up notifications from scripts, pipelines, or AI agents.
 allowed-tools: mcp__scitex__notification_*
+tags: [scitex-notification, scitex-package]
 ---
 
 # scitex-notification

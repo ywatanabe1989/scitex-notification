@@ -1,5 +1,7 @@
 ---
 description: Per-backend setup requirements, environment variables, and availability conditions for all nine notification backends in scitex-notification.
+name: backends
+tags: [scitex-notification, scitex-package]
 ---
 
 # Backends
