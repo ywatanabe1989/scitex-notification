@@ -140,6 +140,41 @@ def get_tool_schemas() -> list[types.Tool]:
             ),
             inputSchema={"type": "object", "properties": {}},
         ),
+        # §5 — skills introspection tools (per audit-mcp-tools convention)
+        types.Tool(
+            name="notification_skills_list",
+            description=(
+                "List the names of every skill page shipped by scitex-"
+                "notification. Use whenever the user wants to discover what "
+                "detailed docs exist (backends, configuration, CLI reference, "
+                "MCP tools, Python API) before drilling into a specific topic. "
+                "Returns a JSON envelope with `skills: [...]`."
+            ),
+            inputSchema={"type": "object", "properties": {}},
+        ),
+        types.Tool(
+            name="notification_skills_get",
+            description=(
+                "Fetch the full Markdown content of one scitex-notification "
+                "skill page. Use after `notification_skills_list` to read an "
+                "individual guide (e.g. `backends`, `configuration`, `cli-"
+                "reference`, `mcp-tools`, `python-api`). Returns a JSON "
+                "envelope with `content: <markdown>` or an error envelope "
+                "listing available names."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": (
+                            "Skill page name without `.md`, e.g. `backends`."
+                        ),
+                    }
+                },
+                "required": ["name"],
+            },
+        ),
     ]
 
 
