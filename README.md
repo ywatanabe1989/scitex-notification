@@ -278,7 +278,9 @@ export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
 
 ## Part of SciTeX
 
-SciTeX Notification is part of [**SciTeX**](https://scitex.ai).
+`scitex-notification` is part of [**SciTeX**](https://scitex.ai). Install via
+the umbrella with `pip install scitex[notification]` to use as
+`scitex.notification` (Python) or `scitex notification ...` (CLI).
 
 The SciTeX system follows the Four Freedoms for Research below, inspired by [the Free Software Definition](https://www.gnu.org/philosophy/free-sw.en.html):
 
