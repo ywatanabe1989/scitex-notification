@@ -117,7 +117,7 @@ stxn.sms("Build finished")                          # Twilio SMS
 
 ## 4 Interfaces
 
-<details>
+<details open>
 <summary><strong>Python API</strong></summary>
 
 <br>
