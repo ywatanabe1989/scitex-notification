@@ -184,25 +184,16 @@ class BaseNotifyBackend(ABC):
     def is_available(self) -> bool: ...
 ```
 
-## NotifyResult
+## NotifyResult / NotifyLevel
 
 ```python
 @dataclass
 class NotifyResult:
-    success: bool
-    backend: str
-    message: str
-    timestamp: str           # ISO 8601
+    success: bool; backend: str; message: str
+    timestamp: str            # ISO 8601
     error: Optional[str] = None
     details: Optional[dict] = None
-```
 
-## NotifyLevel
-
-```python
 class NotifyLevel(Enum):
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-    CRITICAL = "critical"
+    INFO = "info"; WARNING = "warning"; ERROR = "error"; CRITICAL = "critical"
 ```

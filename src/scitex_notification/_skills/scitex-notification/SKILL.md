@@ -11,11 +11,11 @@ Multi-backend alerting with automatic fallback. One `alert()` covers local and r
 
 ## Sub-skills
 
-* [python-api](python-api.md) — `alert()`, `call()`, `sms()` signatures, backends table, env vars
-* [backends](backends.md) — Per-backend setup, env vars, availability checks
-* [configuration](configuration.md) — YAML config, `UIConfig`, level-based routing
-* [cli-reference](cli-reference.md) — CLI commands: `send`, `call`, `sms`, `backends`, `config`
-* [mcp-tools](mcp-tools.md) — MCP tool schemas: `notify`, `notify_by_level`, `list_notification_backends`
+* [01_python-api](01_python-api.md) — `alert()`, `call()`, `sms()` signatures, backends table, env vars
+* [02_mcp-tools](02_mcp-tools.md) — MCP tool schemas: `notify`, `notify_by_level`, `list_notification_backends`
+* [03_configuration](03_configuration.md) — YAML config, `UIConfig`, level-based routing
+* [04_cli-reference](04_cli-reference.md) — CLI commands: `send`, `call`, `sms`, `backends`, `config`
+* [05_backends](05_backends.md) — Per-backend setup, env vars, availability checks
 
 ## Quick Start
 
