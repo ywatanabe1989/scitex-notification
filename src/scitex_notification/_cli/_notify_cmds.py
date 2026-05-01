@@ -46,8 +46,13 @@ _LEVEL_CHOICES = ["info", "warning", "error", "critical"]
 @click.option(
     "--dry-run", is_flag=True, help="Print what would be sent without sending"
 )
+@click.option(
+    "-y", "--yes", is_flag=True, help="Suppress interactive confirmation (assume yes)."
+)
 @click.option("--json", "as_json", is_flag=True, help="Output as structured JSON.")
-def send_notification(message, title, backend, level, no_fallback, dry_run, as_json):
+def send_notification(
+    message, title, backend, level, no_fallback, dry_run, yes, as_json
+):
     """
     Send a notification via configured backends
 
@@ -187,8 +192,11 @@ def call(message, title, level, to_number, repeat, flow_sid, dry_run, as_json):
 @click.option("--title", "-t", help="SMS title/subject (prepended to message)")
 @click.option("--to", "to_number", help="Destination phone number (overrides default)")
 @click.option("--dry-run", is_flag=True, help="Print what would happen without sending")
+@click.option(
+    "-y", "--yes", is_flag=True, help="Suppress interactive confirmation (assume yes)."
+)
 @click.option("--json", "as_json", is_flag=True, help="Output as structured JSON.")
-def send_sms(message, title, to_number, dry_run, as_json):
+def send_sms(message, title, to_number, dry_run, yes, as_json):
     """
     Send an SMS via Twilio
 
