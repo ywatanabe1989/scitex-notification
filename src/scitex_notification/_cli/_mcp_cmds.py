@@ -32,14 +32,24 @@ def mcp(ctx, as_json):
 
 
 @mcp.command("start")
-def mcp_start():
+@click.option("--dry-run", is_flag=True, help="Print launch plan without starting.")
+@click.option(
+    "-y", "--yes", is_flag=True, help="Suppress interactive confirmation (assume yes)."
+)
+def mcp_start(dry_run, yes):
     """
     Start the MCP stdio server
 
     \b
     Example:
       scitex-notification mcp start
+      scitex-notification mcp start --dry-run
     """
+    if dry_run:
+        click.echo(
+            "DRY RUN — would start scitex-notification MCP server (stdio transport)"
+        )
+        return
     from scitex_notification.mcp_server import main as run_server
 
     run_server()
@@ -90,14 +100,31 @@ def mcp_doctor():
         click.secho("\nAll checks passed.", fg="green")
 
 
-@mcp.command("installation")
-def mcp_installation():
+@mcp.command(
+    "installation", hidden=True, context_settings={"ignore_unknown_options": True}
+)
+@click.pass_context
+def mcp_installation_deprecated(ctx):
+    """(deprecated) Renamed to `show-installation`."""
+    click.echo(
+        "error: `scitex-notification mcp installation` was renamed to "
+        "`scitex-notification mcp show-installation`.\n"
+        "Re-run with: scitex-notification mcp show-installation",
+        err=True,
+    )
+    ctx.exit(2)
+
+
+@mcp.command("show-installation")
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON.")
+def mcp_show_installation(as_json):
     """
     Show MCP server installation instructions
 
     \b
     Example:
-      scitex-notification mcp installation
+      scitex-notification mcp show-installation
+      scitex-notification mcp show-installation --json
     """
     config = {
         "mcpServers": {
@@ -107,6 +134,15 @@ def mcp_installation():
             }
         }
     }
+    if as_json:
+        emit_result(
+            {
+                "install_command": "pip install scitex-notification[mcp]",
+                "config": config,
+                "verify_commands": ["scitex-notification mcp doctor"],
+            }
+        )
+        return
     click.secho("Add to your MCP client config (e.g., claude_desktop_config.json):")
     click.echo()
     click.echo(json.dumps(config, indent=2))

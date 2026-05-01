@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scitex-notification"
-version = "0.2.0"
+version = "0.2.5"
 description = "Multi-backend notification system for SciTeX"
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -22,7 +22,6 @@ keywords = [
     "science",
 ]
 classifiers = [
-    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
@@ -37,13 +36,22 @@ classifiers = [
 dependencies = [
     "click>=8.0",
     "scitex_dev",
+    "scitex-dev>=0.7.0",
 ]
 
 [project.optional-dependencies]
-audio = ["scitex-audio>=0.1.0"]
-mcp = ["mcp>=1.0"]
-playwright = ["playwright>=1.40"]
-twilio = ["twilio>=8.0"]
+audio = [
+    "scitex-audio>=0.1.0",
+]
+mcp = [
+    "mcp>=1.0",
+]
+playwright = [
+    "playwright>=1.40",
+]
+twilio = [
+    "twilio>=8.0",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
@@ -58,7 +66,10 @@ docs = [
     "sphinx-autodoc-typehints>=1.25",
 ]
 all = [
-    "scitex-notification[audio,mcp,playwright,twilio,dev,docs]",
+    "scitex-notification[audio]",
+    "scitex-notification[mcp]",
+    "scitex-notification[playwright]",
+    "scitex-notification[twilio]",
 ]
 
 [project.scripts]
@@ -68,10 +79,10 @@ scitex-notification = "scitex_notification._cli:main"
 scitex_notification = "scitex_notification._linter_plugin:get_plugin"
 
 [project.entry-points."scitex_dev.docs"]
-scitex_notification = "scitex_notification"
+scitex-notification = "scitex_notification"
 
 [project.entry-points."scitex_dev.skills"]
-scitex_notification = "scitex_notification"
+scitex-notification = "scitex_notification"
 
 [project.urls]
 Homepage = "https://github.com/ywatanabe1989/scitex-notification"
@@ -86,7 +97,7 @@ packages = ["src/scitex_notification"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 asyncio_mode = "auto"
-addopts = "--cov=scitex_notification --cov-report=term-missing --cov-report=html:htmlcov"
+addopts = "--cov=scitex_notification --cov-report=term-missing --cov-report=html:tests/coverage"
 
 [tool.ruff]
 line-length = 88

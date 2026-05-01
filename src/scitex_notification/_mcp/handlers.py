@@ -15,6 +15,8 @@ __all__ = [
     "list_backends_handler",
     "available_backends_handler",
     "get_config_handler",
+    "skills_list_handler",
+    "skills_get_handler",
 ]
 
 
@@ -257,6 +259,48 @@ async def get_config_handler() -> dict:
             "error": str(e),
             "timestamp": datetime.now().isoformat(),
         }
+
+
+# §5 — skills introspection handlers (per audit-mcp-tools convention)
+async def skills_list_handler() -> dict:
+    """List the names of every skill page shipped by scitex-notification."""
+    from pathlib import Path
+
+    try:
+        skills_dir = Path(__file__).parent.parent / "_skills" / "scitex-notification"
+        names = sorted(p.stem for p in skills_dir.glob("*.md") if p.name != "SKILL.md")
+        return {
+            "success": True,
+            "package": "scitex-notification",
+            "skills": names,
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+async def skills_get_handler(name: str) -> dict:
+    """Fetch the full Markdown content of one scitex-notification skill page."""
+    from pathlib import Path
+
+    try:
+        skills_dir = Path(__file__).parent.parent / "_skills" / "scitex-notification"
+        target = skills_dir / f"{name}.md"
+        if not target.exists():
+            available = sorted(
+                p.stem for p in skills_dir.glob("*.md") if p.name != "SKILL.md"
+            )
+            return {
+                "success": False,
+                "error": f"unknown skill {name!r}; available: {available}",
+            }
+        return {
+            "success": True,
+            "package": "scitex-notification",
+            "name": name,
+            "content": target.read_text(encoding="utf-8"),
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 # EOF

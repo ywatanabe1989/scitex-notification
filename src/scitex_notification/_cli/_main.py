@@ -16,13 +16,49 @@ import click
 
 from ._helpers import group_to_json, print_help_recursive
 from ._mcp_cmds import mcp
-from ._notify_cmds import call, config, list_backends, send, sms
+from ._notify_cmds import (  # noqa: F401
+    call,
+    list_backends,
+    send_notification,
+    send_sms,
+    show_config,
+)
+
+
+def _deprecated_redirect(old: str, new: str):
+    """Build a hidden Click command that exits 2 with a re-run hint."""
+
+    @click.pass_context
+    def _impl(ctx, **_):
+        click.echo(
+            f"error: `scitex-notification {old}` was renamed to "
+            f"`scitex-notification {new}`.\n"
+            f"Re-run with: scitex-notification {new} <args>",
+            err=True,
+        )
+        ctx.exit(2)
+
+    return click.command(
+        old,
+        hidden=True,
+        context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
+    )(_impl)
+
+
+def _get_version() -> str:
+    try:
+        from importlib.metadata import version
+
+        return version("scitex-notification")
+    except Exception:
+        return "0.0.0"
 
 
 @click.group(
     context_settings={"help_option_names": ["-h", "--help"]},
     invoke_without_command=True,
 )
+@click.version_option(version=_get_version(), prog_name="scitex-notification")
 @click.option("--help-recursive", is_flag=True, help="Show help for all subcommands")
 @click.option(
     "--json",
@@ -36,6 +72,10 @@ def cli(ctx, help_recursive, as_json):
     Notification and alerting tools
 
     \b
+    Config is loaded with the SciTeX precedence chain:
+      config.yaml -> $SCITEX_NOTIFICATION_CONFIG -> ~/.scitex/notification/config.yaml -> defaults
+
+    \b
     Backends (fallback order):
       audio      - Text-to-Speech (fast, non-blocking)
       emacs      - Emacs minibuffer message
@@ -46,10 +86,10 @@ def cli(ctx, help_recursive, as_json):
 
     \b
     Examples:
-      scitex-notification send "Task complete!"
+      scitex-notification send-notification "Task complete!"
       scitex-notification call "Wake up!"
       scitex-notification call "Wake up!" --repeat 2
-      scitex-notification backends
+      scitex-notification list-backends
     """
     if help_recursive:
         print_help_recursive(ctx, cli)
@@ -61,12 +101,16 @@ def cli(ctx, help_recursive, as_json):
             click.echo(ctx.get_help())
 
 
-# Register sub-commands from _notify_cmds
-cli.add_command(send)
+# Register renamed sub-commands + hidden deprecation redirects
+cli.add_command(send_notification)
 cli.add_command(call)
-cli.add_command(sms)
+cli.add_command(send_sms)
 cli.add_command(list_backends)
-cli.add_command(config)
+cli.add_command(show_config)
+cli.add_command(_deprecated_redirect("send", "send-notification"))
+cli.add_command(_deprecated_redirect("sms", "send-sms"))
+cli.add_command(_deprecated_redirect("backends", "list-backends"))
+cli.add_command(_deprecated_redirect("config", "show-config"))
 
 # Register mcp subgroup from _mcp_cmds
 cli.add_command(mcp)
@@ -79,8 +123,21 @@ def telegram_channel_group():
 
 
 @telegram_channel_group.command("start")
-def telegram_channel_start():
-    """Start the Telegram channel MCP server for Claude Code."""
+@click.option("--dry-run", is_flag=True, help="Print launch plan without starting.")
+@click.option(
+    "-y", "--yes", is_flag=True, help="Suppress interactive confirmation (assume yes)."
+)
+def telegram_channel_start(dry_run, yes):
+    """Start the Telegram channel MCP server for Claude Code.
+
+    \b
+    Example:
+      $ scitex-notification telegram-channel start
+      $ scitex-notification telegram-channel start --dry-run
+    """
+    if dry_run:
+        click.echo("DRY RUN — would start Telegram channel MCP server")
+        return
     from ..telegram_channel import main as _telegram_main
 
     _telegram_main()

@@ -6,28 +6,29 @@
 
 # SciTeX Notification (<code>scitex-notification</code>)
 
+<!-- scitex-badges:start -->
+[![PyPI](https://img.shields.io/pypi/v/scitex-notification.svg)](https://pypi.org/project/scitex-notification/)
+[![Python](https://img.shields.io/pypi/pyversions/scitex-notification.svg)](https://pypi.org/project/scitex-notification/)
+[![Tests](https://github.com/ywatanabe1989/scitex-notification/actions/workflows/test.yml/badge.svg)](https://github.com/ywatanabe1989/scitex-notification/actions/workflows/test.yml)
+[![Install Test](https://github.com/ywatanabe1989/scitex-notification/actions/workflows/install-test.yml/badge.svg)](https://github.com/ywatanabe1989/scitex-notification/actions/workflows/install-test.yml)
+[![Coverage](https://codecov.io/gh/ywatanabe1989/scitex-notification/graph/badge.svg)](https://codecov.io/gh/ywatanabe1989/scitex-notification)
+[![Docs](https://readthedocs.org/projects/scitex-notification/badge/?version=latest)](https://scitex-notification.readthedocs.io/en/latest/)
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+<!-- scitex-badges:end -->
+
 <p align="center">
   <a href="https://scitex.ai">
     <img src="docs/scitex-logo-blue-cropped.png" alt="SciTeX" width="400">
   </a>
 </p>
 
-<p align="center"><b>Multi-backend notification system — give your AI agents a voice</b></p>
-
-<p align="center">
-  <a href="https://badge.fury.io/py/scitex-notification"><img src="https://badge.fury.io/py/scitex-notification.svg" alt="PyPI version"></a>
-  <a href="https://scitex-notification.readthedocs.io/"><img src="https://readthedocs.org/projects/scitex-notification/badge/?version=latest" alt="Documentation"></a>
-  <a href="https://github.com/ywatanabe1989/scitex-notification/actions/workflows/test.yml"><img src="https://github.com/ywatanabe1989/scitex-notification/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
-</p>
+<p align="center"><b>One-call alerting across 9 backends — audio, desktop, emacs, matplotlib, playwright, email, webhook, Telegram, Twilio.</b></p>
 
 <p align="center">
   <a href="https://scitex-notification.readthedocs.io/">Full Documentation</a> · <code>pip install scitex-notification</code>
 </p>
 
 ---
-
-> **Interfaces:** Python ⭐⭐⭐ (primary) · CLI ⭐⭐ · MCP ⭐⭐ · Skills ⭐⭐ · Hook — · HTTP —
 
 ## Problem and Solution
 
@@ -37,16 +38,10 @@
 | 2 | **Silent failures waste hours** — a webhook 500s or SMTP is down and the agent never tells you, so you stare at the terminal "just in case" | **Automatic fallback chain** — default order audio → emacs → matplotlib → playwright → email; first live backend wins, and level-based routing escalates `critical` to phone/SMS |
 | 3 | **AI agents have no voice** — long-running jobs and overnight training finish unnoticed; you can't leave your desk or sleep through a run | **Escalation to phone/SMS** — `stxn.call()` / `stxn.sms()` via Twilio wake you for critical events; audio TTS covers the room, Telegram / webhook covers everyone else |
 
-## Problem
-
-Developers delegate tasks to AI coding agents — and then wait. Staring at terminals wastes time and drains cognitive resources. Sitting for hours waiting for results takes a physical toll, too.
-
-## Solution
-
-SciTeX Notification lets you leave your desk — or even sleep — while your agents keep working. One MCP server gives them a voice in the following channels: TTS, phone calls, SMS, email, and webhooks.
+## Supported Backends
 
 <details>
-<summary>Supported Backends</summary>
+<summary>9 backends with unified API</summary>
 
 | Backend | API | Transport | Cost | Internet | Notes |
 |---------|-----|-----------|------|----------|-------|
@@ -110,6 +105,17 @@ pip install "scitex-notification[all]"      # everything
 ```
 
 ## Quickstart
+
+```python
+import scitex_notification as stxn
+
+stxn.alert("Training complete!")                    # fallback chain
+stxn.alert("Critical error", level="critical")      # may escalate to phone/SMS
+stxn.call("Server is down — wake up!")              # Twilio phone
+stxn.sms("Build finished")                          # Twilio SMS
+```
+
+## 4 Interfaces
 
 <details>
 <summary><strong>Python API</strong></summary>
@@ -272,7 +278,9 @@ export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
 
 ## Part of SciTeX
 
-SciTeX Notification is part of [**SciTeX**](https://scitex.ai).
+`scitex-notification` is part of [**SciTeX**](https://scitex.ai). Install via
+the umbrella with `pip install scitex[notification]` to use as
+`scitex.notification` (Python) or `scitex notification ...` (CLI).
 
 The SciTeX system follows the Four Freedoms for Research below, inspired by [the Free Software Definition](https://www.gnu.org/philosophy/free-sw.en.html):
 
