@@ -133,7 +133,7 @@ notification.sms("Build done!")                          # SMS via Twilio
 notification.available_backends()                        # list installed backends
 ```
 
-> **[Full API reference](https://scitex-notification.readthedocs.io/)**
+> **[Full API reference](https://scitex-notification.readthedocs.io/en/latest/api/scitex_notification.html)**
 
 </details>
 
@@ -151,7 +151,7 @@ scitex-notification backends                     # List available backends
 scitex-notification mcp list-tools              # List MCP tools
 ```
 
-> **[Full CLI reference](https://scitex-notification.readthedocs.io/)**
+> **[Full CLI reference](https://scitex-notification.readthedocs.io/en/latest/quickstart.html)**
 
 </details>
 
@@ -173,7 +173,7 @@ AI agents can send notifications and check system status autonomously.
 scitex-notification mcp start
 ```
 
-> **[Full MCP specification](https://scitex-notification.readthedocs.io/)**
+> **[Full MCP specification](https://scitex-notification.readthedocs.io/en/latest/api/scitex_notification._mcp.html)**
 
 </details>
 
