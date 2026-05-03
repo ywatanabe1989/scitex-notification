@@ -1,7 +1,8 @@
 ---
-description: scitex-notification CLI commands — send-notification, call, send-sms, list-backends, show-config, mcp, and telegram-channel subcommands with all options.
-name: cli-reference
-tags: [scitex-notification, scitex-package]
+description: |
+  [TOPIC] Cli Reference
+  [DETAILS] scitex-notification CLI commands — send-notification, call, send-sms, list-backends, show-config, mcp, and telegram-channel subcommands with all options.
+tags: [scitex-notification-cli-reference]
 ---
 
 # CLI Reference
