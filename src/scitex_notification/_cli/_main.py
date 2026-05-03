@@ -58,7 +58,7 @@ def _get_version() -> str:
     context_settings={"help_option_names": ["-h", "--help"]},
     invoke_without_command=True,
 )
-@click.version_option(version=_get_version(), prog_name="scitex-notification")
+@click.version_option(_get_version(), "-V", "--version", prog_name="scitex-notification")
 @click.option("--help-recursive", is_flag=True, help="Show help for all subcommands")
 @click.option(
     "--json",
