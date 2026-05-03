@@ -14,7 +14,7 @@ Multi-backend alerting with automatic fallback. One `alert()` covers local and r
 * [01_python-api](01_python-api.md) — `alert()`, `call()`, `sms()` signatures, backends table, env vars
 * [02_mcp-tools](02_mcp-tools.md) — MCP tool schemas: `notify`, `notify_by_level`, `list_notification_backends`
 * [03_configuration](03_configuration.md) — YAML config, `UIConfig`, level-based routing
-* [04_cli-reference](04_cli-reference.md) — CLI commands: `send`, `call`, `sms`, `backends`, `config`
+* [04_cli-reference](04_cli-reference.md) — CLI commands: `send-notification`, `call`, `send-sms`, `list-backends`, `show-config`
 * [05_backends](05_backends.md) — Per-backend setup, env vars, availability checks
 
 ## Quick Start
@@ -41,12 +41,12 @@ stxn.sms("Build finished successfully")
 ## CLI
 
 ```bash
-scitex-notification send "Task done!"
+scitex-notification send-notification "Task done!"
 scitex-notification call "Wake up!" --repeat 2
-scitex-notification sms "Build complete"
-scitex-notification backends          # List available backends
-scitex-notification config            # Show configuration
-scitex-notification mcp start         # Start MCP server
+scitex-notification send-sms "Build complete"
+scitex-notification list-backends     # List available backends
+scitex-notification show-config       # Show configuration
+scitex-notification mcp start         # Start MCP stdio server
 ```
 
 ## MCP Tools
