@@ -21,11 +21,20 @@ Multi-backend alerting with automatic fallback. One `alert()` covers local and r
 
 ## Sub-skills
 
-* [01_python-api](01_python-api.md) — `alert()`, `call()`, `sms()` signatures, backends table, env vars
-* [02_mcp-tools](02_mcp-tools.md) — MCP tool schemas: `notify`, `notify_by_level`, `list_notification_backends`
-* [03_configuration](03_configuration.md) — YAML config, `UIConfig`, level-based routing
-* [04_cli-reference](04_cli-reference.md) — CLI commands: `send-notification`, `call`, `send-sms`, `list-backends`, `show-config`
-* [05_backends](05_backends.md) — Per-backend setup, env vars, availability checks
+### Mandatory leaves
+* [01_installation](01_installation.md) — pip install + extras + smoke verify
+* [02_quick-start](02_quick-start.md) — `alert()` with default fallback + Twilio
+* [03_python-api](03_python-api.md) — top-level Python surface
+* [04_cli-reference](04_cli-reference.md) — `scitex-notification` subcommand summary
+
+### Reference
+* [05_backends](05_backends.md) — per-backend setup, env vars, availability checks
+* [06_python-api](06_python-api.md) — `alert()`, `call()`, `sms()` signatures, backends table (legacy detail)
+* [07_mcp-tools](07_mcp-tools.md) — MCP tool schemas
+* [08_configuration](08_configuration.md) — YAML config, `UIConfig`, level-based routing
+
+### Environment
+* [20_env-vars](20_env-vars.md) — `SCITEX_NOTIFICATION_*` env vars
 
 ## Quick Start
 
