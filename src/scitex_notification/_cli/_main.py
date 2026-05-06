@@ -58,7 +58,9 @@ def _get_version() -> str:
     context_settings={"help_option_names": ["-h", "--help"]},
     invoke_without_command=True,
 )
-@click.version_option(_get_version(), "-V", "--version", prog_name="scitex-notification")
+@click.version_option(
+    _get_version(), "-V", "--version", prog_name="scitex-notification"
+)
 @click.option("--help-recursive", is_flag=True, help="Show help for all subcommands")
 @click.option(
     "--json",
@@ -210,6 +212,15 @@ def list_python_apis(verbose, max_depth, as_json):
                 click.echo(f"  {item['name']}  - {item['doc']}")
             else:
                 click.echo(f"  {item['name']}")
+
+
+# §1a: install-shell-completion + print-shell-completion (canonical leaves)
+try:
+    from scitex_dev._cli._completion import attach_shell_completion
+
+    attach_shell_completion(cli, prog_name="scitex-notification")
+except ImportError:
+    pass
 
 
 if __name__ == "__main__":
