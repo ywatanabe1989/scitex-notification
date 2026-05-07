@@ -278,6 +278,41 @@ export SCITEX_NOTIFICATION_TWILIO_TO=+XX-XXX-XXX-XXXX
 
 </details>
 
+## Architecture
+
+```
+scitex_notification/
+├── _alert.py              ← unified `alert()` with fallback chain
+├── _call.py / _sms.py     ← Twilio escalation entry points
+├── backends/              ← 9 pluggable backends
+│   ├── _audio.py          ← TTS via scitex-audio (SSH relay supported)
+│   ├── _desktop.py        ← notify-send / PowerShell
+│   ├── _emacs.py          ← emacsclient
+│   ├── _matplotlib.py     ← visual popup
+│   ├── _playwright.py     ← browser popup
+│   ├── _email.py          ← SMTP
+│   ├── _webhook.py        ← Slack / Discord / custom HTTP
+│   ├── _telegram.py       ← Telegram bot
+│   └── _twilio.py         ← phone call + SMS
+├── _config.py             ← env / yaml / fallback-order resolution
+├── _cli.py                ← `scitex-notification send / call / backends`
+└── _mcp/                  ← MCP server for AI agents
+```
+
+## Demo
+
+```python
+import scitex_notification as stxn
+
+stxn.alert("training complete")               # default fallback chain
+stxn.alert("OOM!", level="critical")          # escalates to phone/SMS
+stxn.call("server is down — wake up!")        # Twilio voice
+```
+
+<p align="center">
+  <img src="docs/called-take-your-time.png" alt="Audio → phone-call escalation" width="380">
+</p>
+
 ## Part of SciTeX
 
 `scitex-notification` is part of [**SciTeX**](https://scitex.ai). Install via
