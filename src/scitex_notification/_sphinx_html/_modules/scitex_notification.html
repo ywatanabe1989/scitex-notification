@@ -1,0 +1,454 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scitex_notification &mdash; scitex-notification 0.2.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=58050c01"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            scitex-notification
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends.html">Backends</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../env_vars.html">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/scitex_notification.html">scitex_notification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/backends.html">Backends API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mcp.html">MCP Server</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scitex-notification</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">scitex_notification</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scitex_notification</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># Timestamp: &quot;2026-03-16 (ywatanabe)&quot;</span>
+<span class="c1"># File: /home/ywatanabe/proj/scitex-notification/src/scitex_notification/__init__.py</span>
+
+<span class="sd">&quot;&quot;&quot;SciTeX Notification Module - User alerts and feedback.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    import scitex_notification as stxn</span>
+
+<span class="sd">    # Simple alert - uses fallback priority (audio -&gt; emacs -&gt; desktop -&gt; ...)</span>
+<span class="sd">    stxn.alert(&quot;2FA required!&quot;)</span>
+
+<span class="sd">    # Specify backend (no fallback)</span>
+<span class="sd">    stxn.alert(&quot;Error&quot;, backend=&quot;email&quot;)</span>
+
+<span class="sd">    # Multiple backends (tries all)</span>
+<span class="sd">    stxn.alert(&quot;Critical&quot;, backend=[&quot;audio&quot;, &quot;email&quot;])</span>
+
+<span class="sd">    # Use fallback explicitly</span>
+<span class="sd">    stxn.alert(&quot;Important&quot;, fallback=True)</span>
+
+<span class="sd">    # Make a phone call via Twilio</span>
+<span class="sd">    stxn.call(&quot;Critical alert!&quot;)</span>
+
+<span class="sd">    # Send an SMS via Twilio</span>
+<span class="sd">    stxn.sms(&quot;Build done!&quot;)</span>
+
+<span class="sd">Environment Variables:</span>
+<span class="sd">    SCITEX_NOTIFICATION_DEFAULT_BACKEND: audio, email, desktop, webhook</span>
+<span class="sd">    SCITEX_NOTIFICATION_ENV_SRC: path to .env file to auto-load on import</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._env_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_scitex_notification_env</span> <span class="k">as</span> <span class="n">_load_env</span>
+
+<span class="n">_load_env</span><span class="p">()</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotifyLevel</span> <span class="k">as</span> <span class="n">_AlertLevel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">available_backends</span> <span class="k">as</span> <span class="n">_available_backends</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_backend</span> <span class="k">as</span> <span class="n">_get_backend</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">_v</span><span class="p">,</span> <span class="n">PackageNotFoundError</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">__version__</span> <span class="o">=</span> <span class="n">_v</span><span class="p">(</span><span class="s2">&quot;scitex-notification&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
+        <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.0.0+local&quot;</span>
+    <span class="k">del</span> <span class="n">_v</span><span class="p">,</span> <span class="n">PackageNotFoundError</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover — only on ancient Pythons</span>
+    <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.0.0+local&quot;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;alert&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;alert_async&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;available_backends&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;call&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;call_async&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sms_async&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;__version__&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Default fallback priority order</span>
+<span class="n">DEFAULT_FALLBACK_ORDER</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;audio&quot;</span><span class="p">,</span>  <span class="c1"># 1st: TTS audio (non-blocking, immediate)</span>
+    <span class="s2">&quot;emacs&quot;</span><span class="p">,</span>  <span class="c1"># 2nd: Emacs minibuffer (if in Emacs)</span>
+    <span class="s2">&quot;matplotlib&quot;</span><span class="p">,</span>  <span class="c1"># 3rd: Visual popup</span>
+    <span class="s2">&quot;playwright&quot;</span><span class="p">,</span>  <span class="c1"># 4th: Browser popup</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">,</span>  <span class="c1"># 5th: Email (slowest, most reliable)</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="available_backends">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.available_backends">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">available_backends</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return list of available alert backends.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_available_backends</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="alert_async">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.alert_async">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">alert_async</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
+    <span class="n">fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Send alert asynchronously.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    message : str</span>
+<span class="sd">        Alert message</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Alert title</span>
+<span class="sd">    backend : str or list[str], optional</span>
+<span class="sd">        Backend(s) to use. If None, uses default with fallback.</span>
+<span class="sd">    level : str</span>
+<span class="sd">        Alert level: info, warning, error, critical</span>
+<span class="sd">    fallback : bool</span>
+<span class="sd">        If True and backend fails, try next in priority order.</span>
+<span class="sd">        Default True when backend=None, False when backend specified.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if any backend succeeded</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">lvl</span> <span class="o">=</span> <span class="n">_AlertLevel</span><span class="p">(</span><span class="n">level</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">lvl</span> <span class="o">=</span> <span class="n">_AlertLevel</span><span class="o">.</span><span class="n">INFO</span>
+
+    <span class="c1"># Determine backends to try</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># No backend specified: use fallback priority</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SCITEX_NOTIFICATION_DEFAULT_BACKEND&quot;</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fallback</span><span class="p">:</span>
+            <span class="c1"># Start with default, then try others in priority order</span>
+            <span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">default</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">DEFAULT_FALLBACK_ORDER</span> <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">default</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">default</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Backend specified: use it (with optional fallback)</span>
+        <span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">backend</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fallback</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">backends</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Add fallback backends after the specified one</span>
+            <span class="n">backends</span> <span class="o">=</span> <span class="n">backends</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">DEFAULT_FALLBACK_ORDER</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">backends</span>
+            <span class="p">]</span>
+
+    <span class="c1"># Try backends until one succeeds</span>
+    <span class="n">available</span> <span class="o">=</span> <span class="n">_available_backends</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">_get_backend</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">lvl</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="alert">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.alert">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">alert</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
+    <span class="n">fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Send alert synchronously.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    message : str</span>
+<span class="sd">        Alert message</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Alert title</span>
+<span class="sd">    backend : str or list[str], optional</span>
+<span class="sd">        Backend(s) to use. If None, uses fallback priority order.</span>
+<span class="sd">    level : str</span>
+<span class="sd">        Alert level: info, warning, error, critical</span>
+<span class="sd">    fallback : bool</span>
+<span class="sd">        If True and backend fails, try next in priority order.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if any backend succeeded</span>
+
+<span class="sd">    Fallback Order</span>
+<span class="sd">    --------------</span>
+<span class="sd">    1. audio      - TTS (fast, non-blocking)</span>
+<span class="sd">    2. emacs      - Minibuffer message</span>
+<span class="sd">    3. matplotlib - Visual popup</span>
+<span class="sd">    4. playwright - Browser popup</span>
+<span class="sd">    5. email      - Email (slowest)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
+                <span class="n">alert_async</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">fallback</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">alert_async</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">fallback</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="call">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.call">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
+    <span class="n">to_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a phone call via Twilio.</span>
+
+<span class="sd">    Convenience wrapper for alert(backend=&quot;twilio&quot;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">alert</span><span class="p">(</span>
+        <span class="n">message</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;twilio&quot;</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
+        <span class="n">fallback</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">to_number</span><span class="o">=</span><span class="n">to_number</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="call_async">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.call_async">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_async</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
+    <span class="n">to_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a phone call via Twilio (async).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">alert_async</span><span class="p">(</span>
+        <span class="n">message</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;twilio&quot;</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
+        <span class="n">fallback</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">to_number</span><span class="o">=</span><span class="n">to_number</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sms_async">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.sms_async">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">sms_async</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">to_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Send an SMS via Twilio (async).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    message : str</span>
+<span class="sd">        SMS body text</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Prepended to message if provided</span>
+<span class="sd">    to_number : str, optional</span>
+<span class="sd">        Override SCITEX_NOTIFICATION_TWILIO_TO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if SMS sent successfully</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._backends._twilio</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_sms</span> <span class="k">as</span> <span class="n">_send_sms</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_send_sms</span><span class="p">(</span>
+        <span class="n">message</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">to_number</span><span class="o">=</span><span class="n">to_number</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span></div>
+
+
+
+<div class="viewcode-block" id="sms">
+<a class="viewcode-back" href="../api/scitex_notification.html#scitex_notification.sms">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sms</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">to_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Send an SMS via Twilio.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    message : str</span>
+<span class="sd">        SMS body text</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Prepended to message if provided</span>
+<span class="sd">    to_number : str, optional</span>
+<span class="sd">        Override SCITEX_NOTIFICATION_TWILIO_TO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if SMS sent successfully</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+
+        <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
+                <span class="n">sms_async</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">to_number</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sms_async</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">to_number</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># Apply @supports_return_as decorator if scitex_dev is available</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scitex_dev.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">supports_return_as</span> <span class="k">as</span> <span class="n">_supports_return_as</span>
+
+    <span class="n">alert</span> <span class="o">=</span> <span class="n">_supports_return_as</span><span class="p">(</span><span class="n">alert</span><span class="p">)</span>
+    <span class="n">call</span> <span class="o">=</span> <span class="n">_supports_return_as</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+    <span class="n">sms</span> <span class="o">=</span> <span class="n">_supports_return_as</span><span class="p">(</span><span class="n">sms</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="c1"># EOF</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Yusuke Watanabe.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
