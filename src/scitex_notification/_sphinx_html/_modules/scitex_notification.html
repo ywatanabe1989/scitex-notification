@@ -123,9 +123,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotifyLevel</span> <span class="k">as</span> <span class="n">_AlertLevel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">available_backends</span> <span class="k">as</span> <span class="n">_available_backends</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_backend</span> <span class="k">as</span> <span class="n">_get_backend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._notify_legacy</span><span class="w"> </span><span class="kn">import</span> <span class="n">notify</span><span class="p">,</span> <span class="n">send_gmail</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">_v</span><span class="p">,</span> <span class="n">PackageNotFoundError</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageNotFoundError</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">_v</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">__version__</span> <span class="o">=</span> <span class="n">_v</span><span class="p">(</span><span class="s2">&quot;scitex-notification&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
@@ -139,6 +142,8 @@
     <span class="s2">&quot;available_backends&quot;</span><span class="p">,</span>
     <span class="s2">&quot;call&quot;</span><span class="p">,</span>
     <span class="s2">&quot;call_async&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;notify&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;send_gmail&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sms&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sms_async&quot;</span><span class="p">,</span>
     <span class="s2">&quot;__version__&quot;</span><span class="p">,</span>
