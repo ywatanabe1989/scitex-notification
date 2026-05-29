@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Timestamp: "2026-05-30 (ywatanabe)"
-# File: /home/ywatanabe/proj/scitex-notification/tests/scitex_notification/test__notify.py
+# File: /home/ywatanabe/proj/scitex-notification/tests/scitex_notification/test__notify_legacy.py
 
 """Tests for the migrated legacy notify helpers.
 
