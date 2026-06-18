@@ -26,7 +26,13 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pytest pytest-cov pytest-timeout
-          pip install -e ".[dev]" || pip install -e .
+          # Install optional-dependency groups so their code paths are
+          # exercised. The _mcp test module imports `mcp` at collection
+          # time (mcp is an optional dep); without it the whole run aborts
+          # with a ModuleNotFoundError. Prefer [all,dev]; fall back to
+          # [dev] then plain editable so a packaging hiccup doesn't strand
+          # the nightly.
+          pip install -e ".[all,dev]" || pip install -e ".[dev]" || pip install -e .
       - name: Detect import name
         id: pkg
         run: |
