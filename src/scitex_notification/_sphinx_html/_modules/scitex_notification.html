@@ -174,7 +174,7 @@
     <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
-    <span class="n">fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">fallback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Send alert asynchronously.</span>
@@ -186,22 +186,41 @@
 <span class="sd">    title : str, optional</span>
 <span class="sd">        Alert title</span>
 <span class="sd">    backend : str or list[str], optional</span>
-<span class="sd">        Backend(s) to use. If None, uses default with fallback.</span>
+<span class="sd">        Backend(s) to use. If None, walks the default fallback priority order.</span>
+<span class="sd">        If a single backend name is given, ONLY that backend is used (no</span>
+<span class="sd">        silent substitution) unless ``fallback=True`` is passed explicitly.</span>
 <span class="sd">    level : str</span>
 <span class="sd">        Alert level: info, warning, error, critical</span>
-<span class="sd">    fallback : bool</span>
-<span class="sd">        If True and backend fails, try next in priority order.</span>
-<span class="sd">        Default True when backend=None, False when backend specified.</span>
+<span class="sd">    fallback : bool, optional</span>
+<span class="sd">        Controls whether other backends are tried after the requested one(s).</span>
+<span class="sd">        If left as ``None`` (default), it resolves to ``backend is None`` —</span>
+<span class="sd">        i.e. an EXPLICIT backend request fails loud rather than silently</span>
+<span class="sd">        falling through to another channel (no-silent-fallbacks policy). Pass</span>
+<span class="sd">        ``True`` to opt back into fallback for an explicit backend, or</span>
+<span class="sd">        ``False`` to forbid it even when ``backend is None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bool</span>
-<span class="sd">        True if any backend succeeded</span>
+<span class="sd">        True if the requested backend(s) delivered the alert.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a single explicit backend is requested with fallback disabled and</span>
+<span class="sd">        that backend is not currently available — the caller asked for a</span>
+<span class="sd">        specific channel that cannot fire, so we fail loud instead of</span>
+<span class="sd">        returning a quiet ``False`` that looks like a transient send failure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">lvl</span> <span class="o">=</span> <span class="n">_AlertLevel</span><span class="p">(</span><span class="n">level</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">lvl</span> <span class="o">=</span> <span class="n">_AlertLevel</span><span class="o">.</span><span class="n">INFO</span>
+
+    <span class="c1"># Resolve the fallback default: an explicit backend must not silently</span>
+    <span class="c1"># substitute. Only auto-fall-through when no backend was named.</span>
+    <span class="k">if</span> <span class="n">fallback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fallback</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span>
 
     <span class="c1"># Determine backends to try</span>
     <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -213,7 +232,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">default</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Backend specified: use it (with optional fallback)</span>
+        <span class="c1"># Backend specified: use exactly it. Append fallbacks ONLY if the</span>
+        <span class="c1"># caller explicitly opted in via fallback=True.</span>
         <span class="n">backends</span> <span class="o">=</span> <span class="p">[</span><span class="n">backend</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fallback</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">backends</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># Add fallback backends after the specified one</span>
@@ -221,8 +241,21 @@
                 <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">DEFAULT_FALLBACK_ORDER</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">backends</span>
             <span class="p">]</span>
 
-    <span class="c1"># Try backends until one succeeds</span>
+    <span class="c1"># Fail loud: a single explicit backend with no fallback that isn&#39;t</span>
+    <span class="c1"># available is a request we cannot honour. Don&#39;t pretend it was a normal</span>
+    <span class="c1"># send failure (which the caller might retry) — say what&#39;s wrong.</span>
     <span class="n">available</span> <span class="o">=</span> <span class="n">_available_backends</span><span class="p">()</span>
+    <span class="n">explicit_single</span> <span class="o">=</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fallback</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">backends</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">explicit_single</span> <span class="ow">and</span> <span class="n">backends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Notification backend </span><span class="si">{</span><span class="n">backends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> was requested but is not &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;available. Available backends: </span><span class="si">{</span><span class="n">available</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;(none)&#39;</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Install/configure it, or omit --backend to use the fallback &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;chain.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Try backends until one succeeds.</span>
+    <span class="n">last_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">backends</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">:</span>
             <span class="k">continue</span>
@@ -231,8 +264,15 @@
             <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">lvl</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="n">last_error</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span> <span class="ow">or</span> <span class="n">last_error</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">last_error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="c1"># Fail loud for the explicit single-backend case: the one channel the</span>
+    <span class="c1"># caller demanded tried and failed — surface its error rather than a</span>
+    <span class="c1"># silent False.</span>
+    <span class="k">if</span> <span class="n">explicit_single</span> <span class="ow">and</span> <span class="n">last_error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Notification backend </span><span class="si">{</span><span class="n">backends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">last_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">False</span></div>
 
@@ -245,7 +285,7 @@
     <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
-    <span class="n">fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">fallback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Send alert synchronously.</span>
@@ -257,16 +297,26 @@
 <span class="sd">    title : str, optional</span>
 <span class="sd">        Alert title</span>
 <span class="sd">    backend : str or list[str], optional</span>
-<span class="sd">        Backend(s) to use. If None, uses fallback priority order.</span>
+<span class="sd">        Backend(s) to use. If None, walks the fallback priority order. A</span>
+<span class="sd">        single explicit backend is used on its own (no silent substitution)</span>
+<span class="sd">        unless ``fallback=True`` is passed.</span>
 <span class="sd">    level : str</span>
 <span class="sd">        Alert level: info, warning, error, critical</span>
-<span class="sd">    fallback : bool</span>
-<span class="sd">        If True and backend fails, try next in priority order.</span>
+<span class="sd">    fallback : bool, optional</span>
+<span class="sd">        If None (default) resolves to ``backend is None`` — an explicit</span>
+<span class="sd">        backend never silently falls back. See :func:`alert_async`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bool</span>
-<span class="sd">        True if any backend succeeded</span>
+<span class="sd">        True if the requested backend(s) delivered the alert.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError / RuntimeError</span>
+<span class="sd">        When a single explicit backend (fallback disabled) is unavailable or</span>
+<span class="sd">        fails — see :func:`alert_async`. The fallback path (``backend=None``)</span>
+<span class="sd">        still returns ``False`` on total failure.</span>
 
 <span class="sd">    Fallback Order</span>
 <span class="sd">    --------------</span>
